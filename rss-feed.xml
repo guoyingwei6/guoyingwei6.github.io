@@ -7,27 +7,15 @@
 		<atom:link href="/rss-feed.xml" rel="self" type="application/rss+xml" />
 		
 			<item>
-				<title>Hello</title>
+				<title>For July</title>
 				
 				
-					<description>&lt;p&gt;Hello, World!&lt;/p&gt;
+					<description>&lt;p&gt;我的大宝贝儿，爱你~&lt;/p&gt;
 </description>
 				
 				<pubDate>Wed, 26 Jan 2022 08:00:00 +0800</pubDate>
 				<link>http://localhost:4000/encrypt</link>
 				<guid isPermaLink="true">http://localhost:4000/encrypt</guid>
-			</item>
-		
-			<item>
-				<title>Hello</title>
-				
-				
-					<description>&lt;p&gt;Hello, World!&lt;/p&gt;
-</description>
-				
-				<pubDate>Tue, 25 Jan 2022 08:00:00 +0800</pubDate>
-				<link>http://localhost:4000/demo</link>
-				<guid isPermaLink="true">http://localhost:4000/demo</guid>
 			</item>
 		
 			<item>
@@ -164,6 +152,20 @@
 				<pubDate>Tue, 20 Apr 2021 00:00:00 +0800</pubDate>
 				<link>http://localhost:4000/patent-reply</link>
 				<guid isPermaLink="true">http://localhost:4000/patent-reply</guid>
+			</item>
+		
+			<item>
+				<title>【Python】利用requests库下载B站视频（半成品）</title>
+				
+					<dc:creator>Yingwei Guo</dc:creator>
+				
+				
+					<description>&lt;h1 id=&quot;介绍&quot;&gt;介绍&lt;/h1&gt;
+</description>
+				
+				<pubDate>Thu, 25 Feb 2021 00:00:00 +0800</pubDate>
+				<link>http://localhost:4000/bilibili</link>
+				<guid isPermaLink="true">http://localhost:4000/bilibili</guid>
 			</item>
 		
 	</channel>

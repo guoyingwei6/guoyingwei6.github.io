@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-01-26T13:24:19+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Blogs of Yingwei Guo</title><subtitle>Blogs</subtitle><author><name>Yingwei Guo</name></author><entry><title type="html">Hello</title><link href="http://localhost:4000/encrypt" rel="alternate" type="text/html" title="Hello" /><published>2022-01-26T08:00:00+08:00</published><updated>2022-01-26T08:00:00+08:00</updated><id>http://localhost:4000/encrypt</id><content type="html" xml:base="http://localhost:4000/encrypt"><![CDATA[<p>Hello, World!</p>]]></content><author><name>Yingwei Guo</name></author><summary type="html"><![CDATA[Hello, World!]]></summary></entry><entry><title type="html">Hello</title><link href="http://localhost:4000/demo" rel="alternate" type="text/html" title="Hello" /><published>2022-01-25T08:00:00+08:00</published><updated>2022-01-25T08:00:00+08:00</updated><id>http://localhost:4000/demo</id><content type="html" xml:base="http://localhost:4000/demo"><![CDATA[<p>Hello, World!</p>]]></content><author><name>Yingwei Guo</name></author><summary type="html"><![CDATA[Hello, World!]]></summary></entry><entry><title type="html">【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation</title><link href="http://localhost:4000/muti-test" rel="alternate" type="text/html" title="【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation" /><published>2022-01-07T00:00:00+08:00</published><updated>2022-01-07T00:00:00+08:00</updated><id>http://localhost:4000/muti-test</id><content type="html" xml:base="http://localhost:4000/muti-test"><![CDATA[<p>如果p值（假设零假设为真，则看到特定检验统计量的特定值的概率）低于预定义的alpha值（通常始终设为），则通常将统计检验称为有效检验，并且拒绝零假设。 0.05。这意味着在5％的情况下，原假设实际上是真的，并且我们检测到假阳性（I型错误），则否定假设被拒绝。每个统计检验都带有这样的概率，但是该概率是相对于一个检验的。“多次比较”或“多次测试”是基于一个以上测试结果做出决策的一般问题（例如，同时考虑一组统计推断）的名称。问题的性质在这篇文章中已经明确（XKCD“绿色软糖”卡通）。关于GWAS，在典型的研究中，同时进行数十万至数百万次测试，每个测试都针对单个标记，并且具有自己的假阳性概率。因此，在整个GWAS分析中发现一个或多个假阳性（即假关联）的累积可能性要高得多。例如，在5％的水平上测试100,000个基因座的关联性时，预计会有5,000个假阳性。如果我们希望总体I类错误（即全家庭错误率）保持在5％，则需要降低每个基因座的显着性水平。</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-01-26T23:31:46+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Blogs of Yingwei Guo</title><subtitle>Blogs</subtitle><author><name>Yingwei Guo</name></author><entry><title type="html">For July</title><link href="http://localhost:4000/encrypt" rel="alternate" type="text/html" title="For July" /><published>2022-01-26T08:00:00+08:00</published><updated>2022-01-26T08:00:00+08:00</updated><id>http://localhost:4000/encrypt</id><content type="html" xml:base="http://localhost:4000/encrypt"><![CDATA[<p>我的大宝贝儿，爱你~</p>]]></content><author><name>Yingwei Guo</name></author><summary type="html"><![CDATA[我的大宝贝儿，爱你~]]></summary></entry><entry><title type="html">【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation</title><link href="http://localhost:4000/muti-test" rel="alternate" type="text/html" title="【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation" /><published>2022-01-07T00:00:00+08:00</published><updated>2022-01-07T00:00:00+08:00</updated><id>http://localhost:4000/muti-test</id><content type="html" xml:base="http://localhost:4000/muti-test"><![CDATA[<p>如果p值（假设零假设为真，则看到特定检验统计量的特定值的概率）低于预定义的alpha值（通常始终设为），则通常将统计检验称为有效检验，并且拒绝零假设。 0.05。这意味着在5％的情况下，原假设实际上是真的，并且我们检测到假阳性（I型错误），则否定假设被拒绝。每个统计检验都带有这样的概率，但是该概率是相对于一个检验的。“多次比较”或“多次测试”是基于一个以上测试结果做出决策的一般问题（例如，同时考虑一组统计推断）的名称。问题的性质在这篇文章中已经明确（XKCD“绿色软糖”卡通）。关于GWAS，在典型的研究中，同时进行数十万至数百万次测试，每个测试都针对单个标记，并且具有自己的假阳性概率。因此，在整个GWAS分析中发现一个或多个假阳性（即假关联）的累积可能性要高得多。例如，在5％的水平上测试100,000个基因座的关联性时，预计会有5,000个假阳性。如果我们希望总体I类错误（即全家庭错误率）保持在5％，则需要降低每个基因座的显着性水平。</p>
 
 <p>有多种方法可以达到此目的。第一组包括一些经典的控制程序，以Bonferroni校正表示。Bonferroni校正仅将每个基因座处的显着性水平除以测试次数。换句话说，它将alpha值从a = 0.05调整为a =（0.05 / k），其中k是进行的统计检验的次数。如果测试是独立的，则Bonferroni界将提供一个稍微保守的界。如果测试相关，则界限将变得更加保守。由于GWAS标记之间的连锁不平衡，通常假设GWAS数据集的每个关联测试都是独立的是不正确的。因此，应用Bonferroni校正通常会为我们提供最保守的p值阈值（也许是下限？）–对于使用500,000个SNP的典型GWAS，SNP关联的统计显着性将设置为1e-7。</p>
 
@@ -734,4 +734,88 @@ a、首先看对比文件的技术领域与本申请是否相同，如果技术�
 
 <p>d、考虑该特征在对比文件中起到的技术效果与在本方案中起到的技术效果是否相同，如果不同则展开阐述，如果连技术效果也相同，那么说明对比文件公开的内容与本权利要求的技术领域、技术特征、所要解决的技术问题和达到的技术效果都相同，人家审查员说的没错，确实真的相当于。
 干货说完了，福利时间，我整理了一份审查意见答复模板，需要的观众可以找我。
-说了这么多关于审查意见答复的内容，最后还是需要说明一下，如果我们在专利申请阶段的申请文本撰写有问题的话，后续的答复写再好也是亡羊补牢。一份好的答复只能提升专利授权的可能性，一份好的申请文件才是决定专利能否授权的关键因素。</p>]]></content><author><name>Yingwei Guo</name></author><category term="教程" /><summary type="html"><![CDATA[假设我们的专利是一件发明专利。]]></summary></entry></feed>
+说了这么多关于审查意见答复的内容，最后还是需要说明一下，如果我们在专利申请阶段的申请文本撰写有问题的话，后续的答复写再好也是亡羊补牢。一份好的答复只能提升专利授权的可能性，一份好的申请文件才是决定专利能否授权的关键因素。</p>]]></content><author><name>Yingwei Guo</name></author><category term="教程" /><summary type="html"><![CDATA[假设我们的专利是一件发明专利。]]></summary></entry><entry><title type="html">【Python】利用requests库下载B站视频（半成品）</title><link href="http://localhost:4000/bilibili" rel="alternate" type="text/html" title="【Python】利用requests库下载B站视频（半成品）" /><published>2021-02-25T00:00:00+08:00</published><updated>2021-02-25T00:00:00+08:00</updated><id>http://localhost:4000/bilibili</id><content type="html" xml:base="http://localhost:4000/bilibili"><![CDATA[<h1 id="介绍">介绍</h1>
+
+<p>没写完介绍，，，回头再更…….</p>
+
+<h1 id="脚本如下">脚本如下</h1>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+</span><span class="s">'''
+Author: Guo Yingwei
+Date: 2021-02-09 17:51:46
+E-mail: willgyw@126.com
+Description:  Download bilibili video
+LastEditors: gyw
+LastEditTime: 2021-02-25 19:08:37
+'''</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+
+
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'referer'</span> <span class="p">:</span> <span class="s">'https://www.bilibili.com'</span><span class="p">,</span>
+    <span class="s">'user-agent'</span> <span class="p">:</span> <span class="s">'Mozilla/5.0 (Windows. NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36'</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">get_page</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">Session</span><span class="p">().</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="p">)</span>
+        <span class="n">s</span><span class="p">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="n">s</span><span class="p">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">apparent_encoding</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span><span class="p">(</span><span class="s">'解析网页失败，请检查！'</span><span class="p">)</span>
+
+    
+<span class="k">def</span> <span class="nf">parse_page</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">json_str</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="n">findall</span><span class="p">(</span><span class="s">'&lt;script&gt;window.__playinfo__=(.*?)&lt;/script&gt;'</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">re</span><span class="p">.</span><span class="n">S</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+    <span class="n">down_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="n">findall</span><span class="p">(</span><span class="s">'name="title" content="(.*?)"&gt;'</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">re</span><span class="p">.</span><span class="n">S</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">audio_url</span> <span class="o">=</span> <span class="n">json_data</span><span class="p">[</span><span class="s">'data'</span><span class="p">][</span><span class="s">'dash'</span><span class="p">][</span><span class="s">'audio'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">'backup_url'</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">video_url</span> <span class="o">=</span> <span class="n">json_data</span><span class="p">[</span><span class="s">'data'</span><span class="p">][</span><span class="s">'dash'</span><span class="p">][</span><span class="s">'video'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">'backup_url'</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">down_list</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">audio_url</span><span class="p">)</span>
+    <span class="n">down_list</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">video_url</span><span class="p">)</span>
+    <span class="n">down_list</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">down_list</span>
+
+<span class="k">def</span> <span class="nf">write_res</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">r</span><span class="s">'D:\\test\\'</span> <span class="o">+</span> <span class="n">filename</span><span class="p">,</span> <span class="s">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">video_audio_merge</span><span class="p">(</span><span class="n">video_name</span><span class="p">):</span>
+    <span class="k">pass</span> <span class="c1">#
+</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">bv</span><span class="p">):</span>
+    
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s">'http://www.bilibili.com/video/</span><span class="si">{</span><span class="n">bv</span><span class="si">}</span><span class="s">'</span>
+    <span class="n">html_data</span> <span class="o">=</span> <span class="n">get_page</span><span class="p">(</span><span class="n">url</span><span class="p">).</span><span class="n">text</span>
+    <span class="n">hfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">'hhh.html'</span><span class="p">,</span> <span class="s">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">'utf-8'</span><span class="p">)</span>
+    <span class="n">hfile</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">html_data</span><span class="p">)</span>
+    <span class="n">down_url_list</span> <span class="o">=</span> <span class="n">parse_page</span><span class="p">(</span><span class="n">html_data</span><span class="p">)</span>
+    
+    <span class="c1"># sava audio
+</span>    <span class="n">audio_url</span> <span class="o">=</span> <span class="n">down_url_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">down_url_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="n">replace</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="s">''</span><span class="p">).</span><span class="n">replace</span><span class="p">(</span><span class="s">'_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili'</span><span class="p">,</span> <span class="s">''</span><span class="p">)</span>
+    <span class="n">audio_content</span> <span class="o">=</span> <span class="n">get_page</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">audio_url</span><span class="p">).</span><span class="n">content</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'saving audio...'</span><span class="p">)</span>
+    <span class="n">write_res</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">title</span> <span class="o">+</span> <span class="s">'.mp3'</span><span class="p">,</span><span class="n">data</span> <span class="o">=</span> <span class="n">audio_content</span><span class="p">)</span>
+
+    <span class="c1">#save video
+</span>    <span class="n">video_url</span> <span class="o">=</span> <span class="n">down_url_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">down_url_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="n">replace</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="s">''</span><span class="p">).</span><span class="n">replace</span><span class="p">(</span><span class="s">'_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili'</span><span class="p">,</span> <span class="s">''</span><span class="p">)</span>
+    <span class="n">video_content</span> <span class="o">=</span> <span class="n">get_page</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">video_url</span><span class="p">).</span><span class="n">content</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'saving video...'</span><span class="p">)</span>
+    <span class="n">write_res</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">title</span> <span class="o">+</span> <span class="s">'.mp4'</span><span class="p">,</span><span class="n">data</span> <span class="o">=</span> <span class="n">video_content</span><span class="p">)</span>
+    <span class="n">video_audio_merge</span><span class="p">(</span><span class="n">video_name</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">(</span><span class="s">'BV1VJ411v7Ss'</span><span class="p">)</span>
+
+
+</code></pre></div></div>]]></content><author><name>Yingwei Guo</name></author><category term="爬虫" /><summary type="html"><![CDATA[介绍]]></summary></entry></feed>
