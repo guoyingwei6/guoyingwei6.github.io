@@ -1,0 +1,392 @@
+<!doctype html>
+<html>
+  <head>
+  <title>
+    
+      【GWAS】利用PLINK软件进行数据清洗和关联分析 | Blogs of Yingwei Guo
+    
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+  <!-- Use Atom -->
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Blogs of Yingwei Guo" />
+  <!-- Use RSS-2.0 -->
+  <!--<link href="/rss-feed.xml" type="application/rss+xml" rel="alternate" title="Blogs of Yingwei Guo | Blogs"/>
+  //-->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+    MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        }
+      });
+  </script>
+  <!-- Google Analytics -->
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', '', 'auto');
+  ga('send', 'pageview');
+</script>
+
+  <!-- Use Jekyll SEO plugin -->
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>【GWAS】利用PLINK软件进行数据清洗和关联分析 | Blogs of Yingwei Guo</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="【GWAS】利用PLINK软件进行数据清洗和关联分析" />
+<meta name="author" content="Yingwei Guo" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="## assoc 基本的case/control关联 质量性状数量性状均可，不能加协变量" />
+<meta property="og:description" content="## assoc 基本的case/control关联 质量性状数量性状均可，不能加协变量" />
+<link rel="canonical" href="http://localhost:4000/plink" />
+<meta property="og:url" content="http://localhost:4000/plink" />
+<meta property="og:site_name" content="Blogs of Yingwei Guo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-01-02T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="【GWAS】利用PLINK软件进行数据清洗和关联分析" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/plink"},"author":{"@type":"Person","name":"Yingwei Guo"},"@type":"BlogPosting","description":"## assoc 基本的case/control关联 质量性状数量性状均可，不能加协变量","headline":"【GWAS】利用PLINK软件进行数据清洗和关联分析","dateModified":"2022-01-02T00:00:00+08:00","datePublished":"2022-01-02T00:00:00+08:00","url":"http://localhost:4000/plink","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <h3 class="header-title">
+    <a href="/">Blogs of Yingwei Guo</a>
+    <small class="header-subtitle">Blogs</small>
+    <div class="menu">
+  <nav class="menu-content">
+    
+      <a href="/about.html">About</a>
+    
+      <a href="/writing.html">Writing</a>
+    
+      <a href="/contact.html">Contact</a>
+    
+  </nav>
+  <nav class="social-icons">
+    
+  
+  
+    <a href="https://www.github.com/guoyingwei6" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="https://twitter.com/" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="http://www.google.com" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="mailto:guoyingwei6@gmail.com" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="/feed.xml"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+  
+
+  </nav>
+</div>
+
+  </h3>
+</header>
+
+      <div class="content-container">
+        <h1>
+  【GWAS】利用PLINK软件进行数据清洗和关联分析
+</h1>
+
+<article>
+  <p>## assoc 基本的case/control关联</p>
+
+<p>质量性状数量性状均可，不能加协变量</p>
+
+<p>数据过滤：</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile /2020060179/Sheep/GWAS/all_sample339.snp.filtered2.final.rename.modified --chr-set 26 --recode transpose --out all_sample339.snp.filtered2.final.rename.modified323.filter --maf 0.05 --geno 0.1 --mind 0.1 --hwe 0.001 --autosome-xy --allow-extra-chr</code></p>
+
+<p>整理性状：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cut -d " " -f 1 all_sample339.snp.filtered2.final.rename.modified323.filter.tfam &gt; samples
+for i in `cat samples`; do grep $i /2020060179/Sheep/GWAS/trait_tail_type2 &gt;&gt; tail_wool;done
+sed -i 's/1$/2/g' tail_wool
+sed -i 's/0$/1/g' tail_wool
+</code></pre></div></div>
+
+<p>关联
+ 质量性状，默认基于卡方检验，</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile ../all_sample339.snp.filtered2.final.rename.modified323.filter --pheno tail_wool  --assoc --out tail_wool.assoc --chr-set 26 --allow-no-sex</code></p>
+
+<p>也可以加–fisher进行Fisher精确检验计算精确P值，否则–assoc默认根据chi square分布计算近似P值。
+ 在大样本的情况下（总样本数＞40），可以用chi square检验，若总样本数＜40，单个最小频数＜5，则用fisher检验较为合适。
+ 结果文件格式</p>
+
+<p><img src="https://s2.loli.net/2022/01/21/xZVmKEtcHMJhlwT.png" alt="image.png" />
+<img src="https://s2.loli.net/2022/01/21/tZOzpkSeIXjbsNM.png" alt="image.png" /></p>
+
+<p>or 对于数量性状，基于t检验，对于数量性状来说–assoc结果和–linear以及–logistic中的ADD效应的P值一样。</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile ../all_sample339.snp.filtered2.final.rename.modified323.filter --pheno tail_length --assoc --out tail_length.assoc --chr-set 26 --allow-no-sex</code>
+ 结果文件格式</p>
+
+<p><img src="https://s2.loli.net/2022/01/21/sZhyFwLbnOSH96R.png" alt="image.png" /></p>
+
+<p>协变量为分类变量时，需要转换为虚拟变量/哑变量</p>
+
+<p><img src="https://s2.loli.net/2022/01/21/lm8VPeEAnMXsOKj.png" alt="image.png" /></p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile all_sample339.snp.filtered2.final.rename.modified323.filter --covar ../covariate_for_plink --write-covar --dummy-coding --out ../dummy_covariate_for_plink --chr-set 26</code></p>
+
+<p>## logistic 逻辑回归</p>
+
+<p>用于分类变量，可以添加协变量，基于t检验</p>
+
+<p>PCA结果作为协变量</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile all_sample339.snp.filtered2.final.rename.modified323.filter  --pca --chr-set 26 --maf 0.05 --out all_sample339.snp.filtered2.final.rename.modified323.filter.pca</code></p>
+
+<p>关联</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile ../all_sample339.snp.filtered2.final.rename.modified323.filter --pheno tail_wool  --logistic --covar ../covariate_for_plink --out tail_wool.logistic --chr-set 26 --allow-no-sex</code></p>
+
+<p>## linear 线性回归</p>
+
+<p>用于连续性变量，可以添加协变量，基于t检验
+ 不加协变量</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile ../all_sample339.snp.filtered2.final.rename.modified323.filter --pheno tail_length  --linear  --out tail_length.linear.nocov --chr-set 26 --allow-no-sex</code>
+ 加上协变量校正
+ 协变量格式</p>
+
+<p><img src="https://s2.loli.net/2022/01/21/67BP2ZFnLoEGW9T.png" alt="image.png" /></p>
+
+<p>关联</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile ../all_sample339.snp.filtered2.final.rename.modified323.filter --pheno tail_length  --linear --covar ../covariate_for_plink --out tail_length.linear --chr-set 26 --allow-no-sex</code></p>
+
+<p>可以加上–hide-covar参数，不显示协变量，只显示ADD加性效应。</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile ../all_sample339.snp.filtered2.final.rename.modified323.filter --chr-set 26 --pheno ../all_phenotypes --pheno-name Birth_weight --linear --allow-no-sex --out birth_weight.linear.cov1 --covar ../covariate_for_plink --hide-covar</code></p>
+
+<p>### 所有表型一起做 –all-pheno
+ 表型文件格式</p>
+
+<p><img src="https://s2.loli.net/2022/01/21/y1ESskrJLehld4Y.png" alt="image.png" /></p>
+
+<p>要把里面的尾型记录01替换成12，0会识别成缺失</p>
+
+<p>关联分析</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile all_sample339.snp.filtered2.final.rename.modified323.filter --chr-set 26 --assoc --pheno all_phenotypes --all-pheno --allow-no-sex --out allpheno</code></p>
+
+<p>所有表型一起做一般线性模型</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --bfile /2015010726/Sheep/GWAS_for_HuSheep/02.GWAS/by_GEMMA/all_samples317.filter.sort --chr-set 26 --linear hide-covar --pheno /2015010726/Sheep/GWAS_for_HuSheep/02.GWAS/all_phenotypes.txt --all-pheno --allow-no-sex --out allpheno --covar covariate_for_plink_pca3_age_sib</code></p>
+
+<p>pval equal zero 当有P值为0时，设定最小P值</p>
+
+<p><code class="language-plaintext highlighter-rouge">--output-min-p 1e-99</code>     any p-value below 10^{-99} will be reported as 10^{-99}</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --file /2015010726/Sheep/GWAS_for_Black_Suffolk/01.data/plink/Black_Suffolk.snp.filtered --pheno /2015010726/Sheep/GWAS_for_Black_Suffolk/02.GWAS/all_pheno_mod.grep --pheno-name Chest_width --linear hide-covar --covar ../../covariates_pca3 --chr-set 26 --allow-no-sex --out Chest_width --output-min-p 1e-99</code></p>
+
+<p>### 加上多重检验的关联分析
+ Bonferroni校正</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile all_sample339.snp.filtered2.final.rename.modified323.filter --chr-set 26 --assoc --pheno all_phenotypes  --pheno-name tail_type --allow-no-sex --out type --adjust</code></p>
+
+<p>结果文件格式：</p>
+
+<p><img src="https://s2.loli.net/2022/01/21/LfsRi36DN4jQcaC.png" alt="image.png" /></p>
+
+<p>permutation校正</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile all_sample339.snp.filtered2.final.rename.modified323.filter --chr-set 26 --assoc --pheno all_phenotypes --pheno-name tail_type --allow-no-sex --out type --mperm 10000</code></p>
+
+<p>or</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile all_sample339.snp.filtered2.final.rename.modified323.filter --chr-set 26 --assoc --pheno all_phenotypes --pheno-name Tail_length --allow-no-sex --out Tail_length_msperm --mperm 10000</code></p>
+
+<p>结果文件</p>
+
+<p><code class="language-plaintext highlighter-rouge">sort -k4,4 -g Tail_length_msperm.qassoc.mperm | head</code></p>
+
+<p><img src="https://s2.loli.net/2022/01/21/J9enaBCoVDMEvzl.png" alt="image.png" /></p>
+
+<p>提取P值
+<code class="language-plaintext highlighter-rouge">awk '{OFS="\t"}{print $1,$3,$9}' tail_length.linear.nocov.assoc.linear | grep -v 'NA' &gt; tail_length.linear.nocov.assoc.linear.pvalue.txt</code></p>
+
+<p>## 可视化</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>library(qqman)
+data &lt;- read.table("C:/Users/Administrator/Desktop/gwas.assoc.txt",header = T) #读取数去存到data变量里面
+colorset&lt;-c("blue4", "orange3")  #创建一个颜色集合
+manhattan(data, CHR = "CHR", BP = "bp", SNP = "SNP", p = "P-VALUE", col = colorset)   #画曼哈顿图
+</code></pre></div></div>
+
+<p>或者服务器上一键式</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>source /2015010726/.bashrc
+export R_LIBS_USER="/2015010726/R/x86_64-conda_cos6-linux-gnu-library/3.5/"
+</code></pre></div></div>
+
+<p>/2015010726/scripts/Manhattan_QQ_plot.R脚本内容：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Object: Manhattan &amp; QQ Plot for genome-wide association study
+Output: Single figure with PDF format
+Authors: Yingwei Guo
+Date: 8th, Jan, 2021
+Usage: Rscript commandArgs()[4] pvalue.txt sites_number traits_name
+
+ 如果报没有qqman这个包的错误，在shell环境运行下面一行命令：
+export R_LIBS_USER="/2015010726/R/x86_64-conda_cos6-linux-gnu-library/3.5/"
+
+library(qqman)
+args &lt;- commandArgs(trailingOnly = TRUE)
+data &lt;- read.table(args[1],header = T) 读取数去存到data变量里面
+colorset &lt;- c("4C72B0", "DD8452")  创建一个颜色集合
+pdf(paste0(args[3], ".pdf"), width = 18,height=4.5)
+layout(matrix(c(1,2), 1, 2, byrow = TRUE),widths=c(3,1), heights=c(1,1))
+par(mar = (c(3,4,2,2)+ 0.5), mgp=c(1.6,1,0))
+par(bty="l", lwd=1.5)   bty=l  the plot is coordinate instead of box
+manhattan(data, CHR = "CHR", BP = "BP", SNP="SNP", p = "P", suggestiveline = F, genomewideline = F, cex = 0.8)   画曼哈顿图，默认是黑色和灰色，加color=colorset可自定义
+sites_number &lt;- as.numeric(args[2])
+abline(h=-log10(0.05/sites_number), lty=5, col="grey40")  自定义阈值线，h=-log10(0.05/sites_number)
+qq(data$P, cex = 0.8)
+dev.off()
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">Rscript /2015010726/scripts/Manhattan_QQ_plot.R</code></p>
+
+<p>P值列不包含NA的GWAS结果文件 位点数 性状名字
+例如：
+<code class="language-plaintext highlighter-rouge">Rscript /2015010726/scripts/Manhattan_QQ_plot.R Birth_weight.pvalue.txt 281613 Birth_weight.mht</code></p>
+
+<p>注释</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>for i in Birth_weight Ear_length Ear_width Nose_width tail_circumference Tail_length teat_number ; do sed -i 's/^27/X/' $i.top;done
+
+for i in Birth_weight Ear_length Ear_width Nose_width tail_circumference Tail_length teat_number ; do cut -f 1-2 $i.top |bcftools view -R - /2020055372/sheep_data/call_VCF/all_sample339.snp.filtered2.final.rename.vcf.gz -Oz -o $i.top.vcf.gz ;done
+
+for i in Birth_weight Ear_length Ear_width Nose_width tail_circumference Tail_length teat_number ; do perl /2015010726/software/annovar/table_annovar.pl -buildver OAR4.0 -protocol refGene -operation g -vcfinput $i.top.vcf.gz  /2015010726/Sheep/reference/Oar4.0/annovar_db/ -outfile $i.top; done
+
+for i in Birth_weight Ear_length Ear_width Nose_width tail_circumference Tail_length teat_number ; do sed '1d' $i.top.OAR4.0_multianno.txt | cut -f 1-2,4-10 |csvtk join -t -f "1,2;1,2" -k $i.top - -T &gt; $i.p_anno.txt;done
+</code></pre></div></div>
+
+
+</article>
+
+  <span class="post-date">
+  Written on
+  
+  January
+  2nd
+    ,
+  2022
+  by
+  
+    Yingwei Guo
+  
+</span>
+
+
+
+  <div class="post-date">Feel free to share!</div>
+<div class="sharing-icons">
+  <a href="https://twitter.com/intent/tweet?text=【GWAS】利用PLINK软件进行数据清洗和关联分析&amp;url=/plink" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=/plink&amp;title=【GWAS】利用PLINK软件进行数据清洗和关联分析" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+</div>
+
+
+
+  <div class="related">
+  <h1 >You may also enjoy:</h1>
+  
+  <ul class="related-posts">
+    
+      
+        
+          <li>
+            <h3>
+              <a href="/muti-test">
+                【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation
+                <!--<img src="http://localhost:4000/images/">-->
+                <!--<small>January 7, 2022</small>-->
+              </a>
+            </h3>
+          </li>
+          
+        
+      
+        
+        
+      
+        
+          <li>
+            <h3>
+              <a href="/emmax">
+                【GWAS】利用EMMAX软件进行GWAS
+                <!--<img src="http://localhost:4000/images/">-->
+                <!--<small>January 1, 2022</small>-->
+              </a>
+            </h3>
+          </li>
+          
+        
+      
+    
+  </ul>
+</div>
+
+
+
+
+      </div>
+      <footer class="footer">
+  
+  
+  
+    <a href="https://www.github.com/guoyingwei6" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="https://twitter.com/" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="http://www.google.com" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="mailto:guoyingwei6@gmail.com" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="/feed.xml"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+  
+
+  <div class="footer-description"><a href="/">Blogs of Yingwei Guo | Blogs by Yingwei Guo</a></div>
+</footer>
+
+    </div>
+  </body>
+</html>

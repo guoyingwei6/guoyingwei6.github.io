@@ -1,0 +1,298 @@
+<!doctype html>
+<html>
+  <head>
+  <title>
+    
+      摩尔斯电码转换的小程序 | Blogs of Yingwei Guo
+    
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+  <!-- Use Atom -->
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Blogs of Yingwei Guo" />
+  <!-- Use RSS-2.0 -->
+  <!--<link href="/rss-feed.xml" type="application/rss+xml" rel="alternate" title="Blogs of Yingwei Guo | Blogs"/>
+  //-->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+    MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        }
+      });
+  </script>
+  <!-- Google Analytics -->
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', '', 'auto');
+  ga('send', 'pageview');
+</script>
+
+  <!-- Use Jekyll SEO plugin -->
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>摩尔斯电码转换的小程序 | Blogs of Yingwei Guo</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="摩尔斯电码转换的小程序" />
+<meta name="author" content="Yingwei Guo" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="博主是一个刚刚接触生信的新手，正在学习Linux和Python，平时会发布一些自己练手的脚本，用来记录自己的学习之路。" />
+<meta property="og:description" content="博主是一个刚刚接触生信的新手，正在学习Linux和Python，平时会发布一些自己练手的脚本，用来记录自己的学习之路。" />
+<link rel="canonical" href="http://localhost:4000/Morse-code" />
+<meta property="og:url" content="http://localhost:4000/Morse-code" />
+<meta property="og:site_name" content="Blogs of Yingwei Guo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-02-25T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="摩尔斯电码转换的小程序" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/Morse-code"},"author":{"@type":"Person","name":"Yingwei Guo"},"@type":"BlogPosting","description":"博主是一个刚刚接触生信的新手，正在学习Linux和Python，平时会发布一些自己练手的脚本，用来记录自己的学习之路。","headline":"摩尔斯电码转换的小程序","dateModified":"2019-02-25T00:00:00+08:00","datePublished":"2019-02-25T00:00:00+08:00","url":"http://localhost:4000/Morse-code","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <h3 class="header-title">
+    <a href="/">Blogs of Yingwei Guo</a>
+    <small class="header-subtitle">Blogs</small>
+    <div class="menu">
+  <nav class="menu-content">
+    
+      <a href="/about.html">About</a>
+    
+      <a href="/writing.html">Writing</a>
+    
+      <a href="/contact.html">Contact</a>
+    
+  </nav>
+  <nav class="social-icons">
+    
+  
+  
+    <a href="https://www.github.com/guoyingwei6" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="https://twitter.com/" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="http://www.google.com" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="mailto:guoyingwei6@gmail.com" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="/feed.xml"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+  
+
+  </nav>
+</div>
+
+  </h3>
+</header>
+
+      <div class="content-container">
+        <h1>
+  摩尔斯电码转换的小程序
+</h1>
+
+<article>
+  <blockquote>
+  <p>博主是一个刚刚接触生信的新手，正在学习Linux和Python，平时会发布一些自己练手的脚本，用来记录自己的学习之路。</p>
+</blockquote>
+
+<h2 id="介绍">介绍</h2>
+<p>下面是一个用python写的进行英语和摩尔斯电码转换的程序，纯属练习和娱乐，如有错误欢迎指正。</p>
+
+<h2 id="说明">说明</h2>
+<ul>
+  <li>输入的英语只能是单词，标点符号无法识别！</li>
+  <li>转换出的摩尔斯电码字母之间用空格区分，单词之间用/区分。</li>
+</ul>
+
+<h2 id="脚本如下">脚本如下</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># program for convertion between words and Morse code
+</span><span class="s">'''
+Author:will
+Date  :2019/2/11
+E-mail:willgyw@126.com
+'''</span>
+
+<span class="c1"># dict of words2morse
+</span><span class="n">dict1</span> <span class="o">=</span> <span class="p">{</span><span class="s">'a'</span><span class="p">:</span><span class="s">'.-'</span>  <span class="p">,</span> <span class="s">'b'</span><span class="p">:</span><span class="s">'-...'</span><span class="p">,</span> <span class="s">'c'</span><span class="p">:</span><span class="s">'-.-.'</span><span class="p">,</span> <span class="s">'d'</span><span class="p">:</span><span class="s">'-.'</span>  <span class="p">,</span> <span class="s">'e'</span><span class="p">:</span><span class="s">'.'</span>   <span class="p">,</span>
+         <span class="s">'f'</span><span class="p">:</span><span class="s">'..-.'</span><span class="p">,</span> <span class="s">'g'</span><span class="p">:</span><span class="s">'--.'</span> <span class="p">,</span> <span class="s">'h'</span><span class="p">:</span><span class="s">'....'</span><span class="p">,</span> <span class="s">'i'</span><span class="p">:</span><span class="s">'..'</span>  <span class="p">,</span> <span class="s">'j'</span><span class="p">:</span><span class="s">'.---'</span><span class="p">,</span>
+         <span class="s">'k'</span><span class="p">:</span><span class="s">'-.-'</span> <span class="p">,</span> <span class="s">'l'</span><span class="p">:</span><span class="s">'.-..'</span><span class="p">,</span> <span class="s">'m'</span><span class="p">:</span><span class="s">'--'</span>  <span class="p">,</span> <span class="s">'n'</span><span class="p">:</span><span class="s">'-.'</span>  <span class="p">,</span> <span class="s">'o'</span><span class="p">:</span><span class="s">'---'</span> <span class="p">,</span>
+         <span class="s">'p'</span><span class="p">:</span><span class="s">'.--.'</span><span class="p">,</span> <span class="s">'q'</span><span class="p">:</span><span class="s">'--.-'</span><span class="p">,</span> <span class="s">'r'</span><span class="p">:</span><span class="s">'.-.'</span> <span class="p">,</span> <span class="s">'s'</span><span class="p">:</span><span class="s">'...'</span> <span class="p">,</span> <span class="s">'t'</span><span class="p">:</span><span class="s">'-'</span>   <span class="p">,</span>
+         <span class="s">'u'</span><span class="p">:</span><span class="s">'..-'</span> <span class="p">,</span> <span class="s">'v'</span><span class="p">:</span><span class="s">'...-'</span><span class="p">,</span> <span class="s">'w'</span><span class="p">:</span><span class="s">'.--'</span> <span class="p">,</span> <span class="s">'x'</span><span class="p">:</span><span class="s">'-..-'</span><span class="p">,</span> <span class="s">'y'</span><span class="p">:</span><span class="s">'-.--'</span><span class="p">,</span> <span class="s">'z'</span><span class="p">:</span><span class="s">'--..'</span><span class="p">,</span>
+         <span class="s">'0'</span><span class="p">:</span><span class="s">'-----'</span> <span class="p">,</span> <span class="s">'1'</span><span class="p">:</span><span class="s">'.----'</span> <span class="p">,</span> <span class="s">'2'</span><span class="p">:</span><span class="s">'..---'</span> <span class="p">,</span> <span class="s">'3'</span><span class="p">:</span> <span class="s">'...--'</span><span class="p">,</span> <span class="s">'4'</span><span class="p">:</span> <span class="s">'....-'</span> <span class="p">,</span>
+         <span class="s">'5'</span><span class="p">:</span> <span class="s">'.....'</span><span class="p">,</span> <span class="s">'6'</span><span class="p">:</span> <span class="s">'-....'</span><span class="p">,</span> <span class="s">'7'</span><span class="p">:</span> <span class="s">'--...'</span><span class="p">,</span> <span class="s">'8'</span><span class="p">:</span> <span class="s">'---..'</span><span class="p">,</span> <span class="s">'9'</span><span class="p">:</span> <span class="s">'----.'</span> <span class="p">}</span>
+
+<span class="c1"># dict of morse2words
+</span><span class="n">dict2</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">dict1</span><span class="p">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dict1</span><span class="p">.</span><span class="n">keys</span><span class="p">()))</span>
+
+<span class="k">def</span> <span class="nf">encode</span><span class="p">():</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">"Input a sentence you want to endoce, NO PUNCTUATION:"</span><span class="p">).</span><span class="n">strip</span><span class="p">().</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">letter</span> <span class="o">==</span> <span class="s">' '</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">'/'</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">' '</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">dict1</span><span class="p">[</span><span class="n">letter</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="s">' '</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">decode</span><span class="p">():</span>
+    <span class="n">codes</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">"Input Morse code you want to decode, ONLY MORSE CODE:"</span><span class="p">).</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">(</span><span class="s">" "</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">sign</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s">'/'</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">''</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">dict2</span><span class="p">[</span><span class="n">sign</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="s">''</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">()</span>
+    
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>    
+    <span class="k">while</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">choice</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">"Encode(Words to Morse codes) or Decode(Morse codes to Words).Plase input [0/1]"</span><span class="p">)</span>
+
+        <span class="k">if</span>   <span class="n">choice</span> <span class="o">==</span> <span class="s">'0'</span><span class="p">:</span>
+            <span class="n">encode</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s">'1'</span><span class="p">:</span>
+            <span class="n">decode</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+
+<span class="k">if</span> <span class="n">__name__</span><span class="o">==</span><span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+    
+
+
+</code></pre></div></div>
+
+
+</article>
+
+  <span class="post-date">
+  Written on
+  
+  February
+  25th,
+  2019
+  by
+  
+    Yingwei Guo
+  
+</span>
+
+
+
+  <div class="post-date">Feel free to share!</div>
+<div class="sharing-icons">
+  <a href="https://twitter.com/intent/tweet?text=摩尔斯电码转换的小程序&amp;url=/Morse-code" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=/Morse-code&amp;title=摩尔斯电码转换的小程序" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+</div>
+
+
+
+  <div class="related">
+  <h1 >You may also enjoy:</h1>
+  
+  <ul class="related-posts">
+    
+      
+        
+          <li>
+            <h3>
+              <a href="/Id-from-fasta">
+                根据ID从FASTA文件中提取序列
+                <!--<img src="http://localhost:4000/images/">-->
+                <!--<small>February 27, 2019</small>-->
+              </a>
+            </h3>
+          </li>
+          
+        
+      
+        
+          <li>
+            <h3>
+              <a href="/extract-from-fastq">
+                从fastq文件中批量提取/过滤序列
+                <!--<img src="http://localhost:4000/images/">-->
+                <!--<small>February 26, 2019</small>-->
+              </a>
+            </h3>
+          </li>
+          
+        
+      
+        
+        
+      
+    
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+    
+  </ul>
+</div>
+
+
+
+
+      </div>
+      <footer class="footer">
+  
+  
+  
+    <a href="https://www.github.com/guoyingwei6" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="https://twitter.com/" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="http://www.google.com" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="mailto:guoyingwei6@gmail.com" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="/feed.xml"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+  
+
+  <div class="footer-description"><a href="/">Blogs of Yingwei Guo | Blogs by Yingwei Guo</a></div>
+</footer>
+
+    </div>
+  </body>
+</html>

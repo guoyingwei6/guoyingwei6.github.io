@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+	<channel>
+		<title>Blogs of Yingwei Guo</title>
+		<description>Blogs</description>
+		<link></link>
+		<atom:link href="/rss-feed.xml" rel="self" type="application/rss+xml" />
+		
+			<item>
+				<title>Hello</title>
+				
+				
+					<description>&lt;p&gt;Hello, World!&lt;/p&gt;
+</description>
+				
+				<pubDate>Tue, 25 Jan 2022 08:00:00 +0800</pubDate>
+				<link>http://localhost:4000/demo</link>
+				<guid isPermaLink="true">http://localhost:4000/demo</guid>
+			</item>
+		
+			<item>
+				<title>【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation</title>
+				
+					<dc:creator>Yingwei Guo</dc:creator>
+				
+				
+					<description>&lt;p&gt;如果p值（假设零假设为真，则看到特定检验统计量的特定值的概率）低于预定义的alpha值（通常始终设为），则通常将统计检验称为有效检验，并且拒绝零假设。 0.05。这意味着在5％的情况下，原假设实际上是真的，并且我们检测到假阳性（I型错误），则否定假设被拒绝。每个统计检验都带有这样的概率，但是该概率是相对于一个检验的。“多次比较”或“多次测试”是基于一个以上测试结果做出决策的一般问题（例如，同时考虑一组统计推断）的名称。问题的性质在这篇文章中已经明确（XKCD“绿色软糖”卡通）。关于GWAS，在典型的研究中，同时进行数十万至数百万次测试，每个测试都针对单个标记，并且具有自己的假阳性概率。因此，在整个GWAS分析中发现一个或多个假阳性（即假关联）的累积可能性要高得多。例如，在5％的水平上测试100,000个基因座的关联性时，预计会有5,000个假阳性。如果我们希望总体I类错误（即全家庭错误率）保持在5％，则需要降低每个基因座的显着性水平。&lt;/p&gt;
+</description>
+				
+				<pubDate>Fri, 07 Jan 2022 00:00:00 +0800</pubDate>
+				<link>http://localhost:4000/muti-test</link>
+				<guid isPermaLink="true">http://localhost:4000/muti-test</guid>
+			</item>
+		
+			<item>
+				<title>【统计学】卡方检验和Fisher精确检验</title>
+				
+					<dc:creator>Yingwei Guo</dc:creator>
+				
+				
+					<description>&lt;h2 id=&quot;什么是卡方检验&quot;&gt;什么是卡方检验&lt;/h2&gt;
+</description>
+				
+				<pubDate>Mon, 03 Jan 2022 00:00:00 +0800</pubDate>
+				<link>http://localhost:4000/chi-square-fisher-exact-test</link>
+				<guid isPermaLink="true">http://localhost:4000/chi-square-fisher-exact-test</guid>
+			</item>
+		
+			<item>
+				<title>【GWAS】利用PLINK软件进行数据清洗和关联分析</title>
+				
+					<dc:creator>Yingwei Guo</dc:creator>
+				
+				
+					<description>&lt;p&gt;## assoc 基本的case/control关联&lt;/p&gt;
+
+&lt;p&gt;质量性状数量性状均可，不能加协变量&lt;/p&gt;
+</description>
+				
+				<pubDate>Sun, 02 Jan 2022 00:00:00 +0800</pubDate>
+				<link>http://localhost:4000/plink</link>
+				<guid isPermaLink="true">http://localhost:4000/plink</guid>
+			</item>
+		
+			<item>
+				<title>【GWAS】利用EMMAX软件进行GWAS</title>
+				
+					<dc:creator>Yingwei Guo</dc:creator>
+				
+				
+					<description>&lt;p&gt;Step1 ：
+其实所有软件的使用方法基本上都是三部分：软件名字    输入文件   参数    输出文件   ，软件名字不用管，只需要把后面三个搞清楚就可以&lt;/p&gt;
+</description>
+				
+				<pubDate>Sat, 01 Jan 2022 00:00:00 +0800</pubDate>
+				<link>http://localhost:4000/emmax</link>
+				<guid isPermaLink="true">http://localhost:4000/emmax</guid>
+			</item>
+		
+			<item>
+				<title>SNP Calling</title>
+				
+					<dc:creator>Yingwei Guo</dc:creator>
+				
+				
+					<description>&lt;p&gt;01.QC
+02.REFERENCE INDEX
+03.MAPPING
+04.CALLING
+05.FILTER
+06.CONCATENATE
+07.ANNOTATION 
+08.PRUNE
+09.PHASE
+10.IMPUTATION&lt;/p&gt;
+</description>
+				
+				<pubDate>Sun, 12 Dec 2021 00:00:00 +0800</pubDate>
+				<link>http://localhost:4000/snp-calling</link>
+				<guid isPermaLink="true">http://localhost:4000/snp-calling</guid>
+			</item>
+		
+			<item>
+				<title>【算法】贪婪算法和动态规划</title>
+				
+					<dc:creator>Yingwei Guo</dc:creator>
+				
+				
+					<description>&lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2022/01/21/Vjb86eKWkqXP9SH.png&quot; alt=&quot;幻灯片1.PNG&quot; /&gt;
+&lt;img src=&quot;https://s2.loli.net/2022/01/21/tswoeK2iXSdHzLb.png&quot; alt=&quot;幻灯片2.PNG&quot; /&gt;
+&lt;img src=&quot;https://s2.loli.net/2022/01/21/g2BZHzwrUTXNtcs.png&quot; alt=&quot;幻灯片3.PNG&quot; /&gt;
+&lt;img src=&quot;https://s2.loli.net/2022/01/21/v2sfVcwI9ZML7Di.png&quot; alt=&quot;幻灯片4.PNG&quot; /&gt;
+&lt;img src=&quot;https://s2.loli.net/2022/01/21/zqujRKPcsalbJHe.png&quot; alt=&quot;幻灯片5.PNG&quot; /&gt;
+&lt;img src=&quot;https://s2.loli.net/2022/01/21/YALX2sJKo16pxZ5.png&quot; alt=&quot;幻灯片6.PNG&quot; /&gt;
+&lt;img src=&quot;https://s2.loli.net/2022/01/21/I43gjro76akB1Ri.png&quot; alt=&quot;幻灯片7.PNG&quot; /&gt;
+&lt;img src=&quot;https://s2.loli.net/2022/01/21/4TkHipDaG3UeyuV.png&quot; alt=&quot;幻灯片8.PNG&quot; /&gt;
+&lt;img src=&quot;https://s2.loli.net/2022/01/21/8QMR3h9iDtECPwL.png&quot; alt=&quot;幻灯片9.PNG&quot; /&gt;
+&lt;img src=&quot;https://s2.loli.net/2022/01/21/szUw8cFZQM6TSNG.png&quot; alt=&quot;幻灯片10.PNG&quot; /&gt;
+&lt;img src=&quot;https://s2.loli.net/2022/01/21/bMZjo9stWyPuRre.png&quot; alt=&quot;幻灯片11.PNG&quot; /&gt;
+&lt;img src=&quot;https://s2.loli.net/2022/01/21/O4UTuDLgP61jiw9.png&quot; alt=&quot;幻灯片12.PNG&quot; /&gt;
+&lt;img src=&quot;https://s2.loli.net/2022/01/21/IvunhDS41TM6cts.png&quot; alt=&quot;幻灯片13.PNG&quot; /&gt;&lt;/p&gt;
+</description>
+				
+				<pubDate>Sat, 06 Nov 2021 00:00:00 +0800</pubDate>
+				<link>http://localhost:4000/ga-dp</link>
+				<guid isPermaLink="true">http://localhost:4000/ga-dp</guid>
+			</item>
+		
+			<item>
+				<title>【Python】批量提取指定网站上的特定信息</title>
+				
+					<dc:creator>Yingwei Guo</dc:creator>
+				
+				
+					<description>&lt;h2 id=&quot;介绍&quot;&gt;介绍&lt;/h2&gt;
+</description>
+				
+				<pubDate>Sun, 10 Oct 2021 00:00:00 +0800</pubDate>
+				<link>http://localhost:4000/extarct-info</link>
+				<guid isPermaLink="true">http://localhost:4000/extarct-info</guid>
+			</item>
+		
+			<item>
+				<title>【转载】如何回复专利审查意见通知书</title>
+				
+					<dc:creator>Yingwei Guo</dc:creator>
+				
+				
+					<description>&lt;p&gt;假设我们的专利是一件发明专利。&lt;/p&gt;
+</description>
+				
+				<pubDate>Tue, 20 Apr 2021 00:00:00 +0800</pubDate>
+				<link>http://localhost:4000/patent-reply</link>
+				<guid isPermaLink="true">http://localhost:4000/patent-reply</guid>
+			</item>
+		
+			<item>
+				<title>【Python】利用requests库下载B站视频（半成品）</title>
+				
+					<dc:creator>Yingwei Guo</dc:creator>
+				
+				
+					<description>&lt;h1 id=&quot;介绍&quot;&gt;介绍&lt;/h1&gt;
+</description>
+				
+				<pubDate>Thu, 25 Feb 2021 00:00:00 +0800</pubDate>
+				<link>http://localhost:4000/bilibili</link>
+				<guid isPermaLink="true">http://localhost:4000/bilibili</guid>
+			</item>
+		
+	</channel>
+</rss>

@@ -1,0 +1,240 @@
+<!doctype html>
+<html>
+  <head>
+  <title>
+    
+      【算法】贪婪算法和动态规划 | Blogs of Yingwei Guo
+    
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+  <!-- Use Atom -->
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Blogs of Yingwei Guo" />
+  <!-- Use RSS-2.0 -->
+  <!--<link href="/rss-feed.xml" type="application/rss+xml" rel="alternate" title="Blogs of Yingwei Guo | Blogs"/>
+  //-->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+    MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        }
+      });
+  </script>
+  <!-- Google Analytics -->
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', '', 'auto');
+  ga('send', 'pageview');
+</script>
+
+  <!-- Use Jekyll SEO plugin -->
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>【算法】贪婪算法和动态规划 | Blogs of Yingwei Guo</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="【算法】贪婪算法和动态规划" />
+<meta name="author" content="Yingwei Guo" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Blogs" />
+<meta property="og:description" content="Blogs" />
+<link rel="canonical" href="http://localhost:4000/ga-dp" />
+<meta property="og:url" content="http://localhost:4000/ga-dp" />
+<meta property="og:site_name" content="Blogs of Yingwei Guo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-11-06T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="【算法】贪婪算法和动态规划" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ga-dp"},"author":{"@type":"Person","name":"Yingwei Guo"},"@type":"BlogPosting","description":"Blogs","headline":"【算法】贪婪算法和动态规划","dateModified":"2021-11-06T00:00:00+08:00","datePublished":"2021-11-06T00:00:00+08:00","url":"http://localhost:4000/ga-dp","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <h3 class="header-title">
+    <a href="/">Blogs of Yingwei Guo</a>
+    <small class="header-subtitle">Blogs</small>
+    <div class="menu">
+  <nav class="menu-content">
+    
+      <a href="/about.html">About</a>
+    
+      <a href="/writing.html">Writing</a>
+    
+      <a href="/contact.html">Contact</a>
+    
+  </nav>
+  <nav class="social-icons">
+    
+  
+  
+    <a href="https://www.github.com/guoyingwei6" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="https://twitter.com/" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="http://www.google.com" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="mailto:guoyingwei6@gmail.com" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="/feed.xml"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+  
+
+  </nav>
+</div>
+
+  </h3>
+</header>
+
+      <div class="content-container">
+        <h1>
+  【算法】贪婪算法和动态规划
+</h1>
+
+<article>
+  <p><img src="https://s2.loli.net/2022/01/21/Vjb86eKWkqXP9SH.png" alt="幻灯片1.PNG" />
+<img src="https://s2.loli.net/2022/01/21/tswoeK2iXSdHzLb.png" alt="幻灯片2.PNG" />
+<img src="https://s2.loli.net/2022/01/21/g2BZHzwrUTXNtcs.png" alt="幻灯片3.PNG" />
+<img src="https://s2.loli.net/2022/01/21/v2sfVcwI9ZML7Di.png" alt="幻灯片4.PNG" />
+<img src="https://s2.loli.net/2022/01/21/zqujRKPcsalbJHe.png" alt="幻灯片5.PNG" />
+<img src="https://s2.loli.net/2022/01/21/YALX2sJKo16pxZ5.png" alt="幻灯片6.PNG" />
+<img src="https://s2.loli.net/2022/01/21/I43gjro76akB1Ri.png" alt="幻灯片7.PNG" />
+<img src="https://s2.loli.net/2022/01/21/4TkHipDaG3UeyuV.png" alt="幻灯片8.PNG" />
+<img src="https://s2.loli.net/2022/01/21/8QMR3h9iDtECPwL.png" alt="幻灯片9.PNG" />
+<img src="https://s2.loli.net/2022/01/21/szUw8cFZQM6TSNG.png" alt="幻灯片10.PNG" />
+<img src="https://s2.loli.net/2022/01/21/bMZjo9stWyPuRre.png" alt="幻灯片11.PNG" />
+<img src="https://s2.loli.net/2022/01/21/O4UTuDLgP61jiw9.png" alt="幻灯片12.PNG" />
+<img src="https://s2.loli.net/2022/01/21/IvunhDS41TM6cts.png" alt="幻灯片13.PNG" /></p>
+
+</article>
+
+  <span class="post-date">
+  Written on
+  
+  November
+  6th,
+  2021
+  by
+  
+    Yingwei Guo
+  
+</span>
+
+
+
+  <div class="post-date">Feel free to share!</div>
+<div class="sharing-icons">
+  <a href="https://twitter.com/intent/tweet?text=【算法】贪婪算法和动态规划&amp;url=/ga-dp" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=/ga-dp&amp;title=【算法】贪婪算法和动态规划" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+</div>
+
+
+
+  <div class="related">
+  <h1 >You may also enjoy:</h1>
+  
+  <ul class="related-posts">
+    
+      
+        
+          <li>
+            <h3>
+              <a href="/muti-test">
+                【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation
+                <!--<img src="http://localhost:4000/images/">-->
+                <!--<small>January 7, 2022</small>-->
+              </a>
+            </h3>
+          </li>
+          
+        
+      
+        
+          <li>
+            <h3>
+              <a href="/plink">
+                【GWAS】利用PLINK软件进行数据清洗和关联分析
+                <!--<img src="http://localhost:4000/images/">-->
+                <!--<small>January 2, 2022</small>-->
+              </a>
+            </h3>
+          </li>
+          
+        
+      
+        
+          <li>
+            <h3>
+              <a href="/emmax">
+                【GWAS】利用EMMAX软件进行GWAS
+                <!--<img src="http://localhost:4000/images/">-->
+                <!--<small>January 1, 2022</small>-->
+              </a>
+            </h3>
+          </li>
+          
+        
+      
+    
+  </ul>
+</div>
+
+
+
+
+      </div>
+      <footer class="footer">
+  
+  
+  
+    <a href="https://www.github.com/guoyingwei6" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="https://twitter.com/" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="http://www.google.com" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="mailto:guoyingwei6@gmail.com" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="/feed.xml"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+  
+
+  <div class="footer-description"><a href="/">Blogs of Yingwei Guo | Blogs by Yingwei Guo</a></div>
+</footer>
+
+    </div>
+  </body>
+</html>

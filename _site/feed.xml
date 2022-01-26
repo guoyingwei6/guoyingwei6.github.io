@@ -1,0 +1,821 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-01-25T13:35:49+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Blogs of Yingwei Guo</title><subtitle>Blogs</subtitle><author><name>Yingwei Guo</name></author><entry><title type="html">Hello</title><link href="http://localhost:4000/demo" rel="alternate" type="text/html" title="Hello" /><published>2022-01-25T08:00:00+08:00</published><updated>2022-01-25T08:00:00+08:00</updated><id>http://localhost:4000/demo</id><content type="html" xml:base="http://localhost:4000/demo"><![CDATA[<p>Hello, World!</p>]]></content><author><name>Yingwei Guo</name></author><summary type="html"><![CDATA[Hello, World!]]></summary></entry><entry><title type="html">【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation</title><link href="http://localhost:4000/muti-test" rel="alternate" type="text/html" title="【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation" /><published>2022-01-07T00:00:00+08:00</published><updated>2022-01-07T00:00:00+08:00</updated><id>http://localhost:4000/muti-test</id><content type="html" xml:base="http://localhost:4000/muti-test"><![CDATA[<p>如果p值（假设零假设为真，则看到特定检验统计量的特定值的概率）低于预定义的alpha值（通常始终设为），则通常将统计检验称为有效检验，并且拒绝零假设。 0.05。这意味着在5％的情况下，原假设实际上是真的，并且我们检测到假阳性（I型错误），则否定假设被拒绝。每个统计检验都带有这样的概率，但是该概率是相对于一个检验的。“多次比较”或“多次测试”是基于一个以上测试结果做出决策的一般问题（例如，同时考虑一组统计推断）的名称。问题的性质在这篇文章中已经明确（XKCD“绿色软糖”卡通）。关于GWAS，在典型的研究中，同时进行数十万至数百万次测试，每个测试都针对单个标记，并且具有自己的假阳性概率。因此，在整个GWAS分析中发现一个或多个假阳性（即假关联）的累积可能性要高得多。例如，在5％的水平上测试100,000个基因座的关联性时，预计会有5,000个假阳性。如果我们希望总体I类错误（即全家庭错误率）保持在5％，则需要降低每个基因座的显着性水平。</p>
+
+<p>有多种方法可以达到此目的。第一组包括一些经典的控制程序，以Bonferroni校正表示。Bonferroni校正仅将每个基因座处的显着性水平除以测试次数。换句话说，它将alpha值从a = 0.05调整为a =（0.05 / k），其中k是进行的统计检验的次数。如果测试是独立的，则Bonferroni界将提供一个稍微保守的界。如果测试相关，则界限将变得更加保守。由于GWAS标记之间的连锁不平衡，通常假设GWAS数据集的每个关联测试都是独立的是不正确的。因此，应用Bonferroni校正通常会为我们提供最保守的p值阈值（也许是下限？）–对于使用500,000个SNP的典型GWAS，SNP关联的统计显着性将设置为1e-7。</p>
+
+<p>I类与II类之间的权衡适用于大多数统计检验，研究人员更关心的是哪个错误决定如何进行。大规模探索性实验的目标通常是从原始数据中选择一组减少的潜在候选对象，以进行进一步分析。为了包括所有可能的真实替代方案（与真实null相对），返乡调查员通常愿意接受一些误报。在许多GWAS中，我们希望采用大量可能的假设并提取一个子集，该子集显示出对其替代假设的最大支持，以供进一步考虑。还已知的是，当研究的对象是稀有变体，稀有疾病或效果不大的变体时，GWAS的功率较低（即易受II型错误影响）。因此，我们通常更关心II型错误，</p>
+
+<p>顺序Bonferroni校正是对标准Bonferroni校正的增强功能。一般的想法是，当我们拒绝一个假设时，剩下的测试就会少一些，并且多重比较校正应该考虑到这一点。Holm（1979）提出了一种顺序Bonferroni校正方法，该方法允许测试之间可能存在依赖性。当我们期望许多无效假设中只有少数是错误的时，Bonferroni校正及其扩展适用。假设n是测试总数，n0是真正的null数，taht表示n0接近n。另一种设置是，确实有相当一部分测试是错误的。在这种情况下，即使是连续的Bonferroni校正也可能过于严格，从而导致假阴性过多（即功率降低）。如果我们期望一定数量的假设是错误的，那么控制我们声明为重要的测试（即错误发现）中的误报率要比限制所有测试（包括那些测试）中的误报率更合适。我们不能拒绝其原假设。话虽这么说，我们也不希望被误报完全淹没，因此缩小集合中误报的比例仍然需要控制。</p>
+
+<p>从这种思路得出的一种方法是控制错误发现率（FDR）–重大结果为假阳性的比例（即，假阳性测试的比例）。该方法试图找到一个p值阈值tao，以使使用p值&lt;= tao声明为显着的检验集具有所需的错误发现率delta（delta = 5％表示平均而言，我们声明为重要的实际上不是）。FDR程序最初由Benjamini和Hochberg（1995）开发，实质上纠正了预期错误发现的数量，从而提供了对那些被认为是重大发现的实际真实结果数量的估计。该技术已广泛应用于GWAS，并以多种方式扩展（van den Oord，2008）。考虑测试N个假设H_ {1}，H_ {2}，\ ldots，H_ {N}基于它们各自的p值p_ {1}，p_ {2}，\ ldots和p_ {N}。考虑到发现的分数q被允许（容忍）为假。按升序对p值进行排序，p _ {（（1）} \ leq p _ {（2）} \ leq \ ldots \ leq p _ {（N）}并表示H _ {（i）}对应于p _ {（一世）}。令k为p _ {（i）} \ leq \ frac {i} {N} \ frac {q} {c（N）}的最大i。然后拒绝所有H _ {（i）}，i = 1、2，\ ldots，k。常数c（N）不在原始出版物中，出现在Benjamini和Yekutieli（2001）中，用于无法确定独立性的情况。常数的可能选择为c（N）= 1或c（N）= \ sum_ {i = 1} ^ {N} 1 / i。第二种在任何情况下均有效，而第一种在大多数情况下均有效，尤其是在测试之间不存在负相关的情况下。如Genovese等人介绍的那样，BH程序已在不同领域找到了许多应用，包括神经影像学。（2002）。FDR校正的问题在于q _ {（i）}不是p _ {（i）}的单调函数。这意味着，如果有人使用任何q _ {（i）}来设置FDR校正值的集合的阈值，则结果与通过对所有这些相应q级别依次应用B＆H程序所获得的结果不同。</p>
+
+<p>为了解决这个问题，Yekuteli和Benjamini（1999）引入了FDR调整，其中强制执行单调性，并且该定义与原始FDR定义兼容。令q * {（i）}为p {（i）}的FDR调整值。它的值是最小的q _ {（k）}，k \ geq i，其中q _ {（k）}是经过FDR校正的（如上所述）。就是这样！</p>
+
+<p>如前所述，控制误报与错误发现的决定在很大程度上取决于测试的一部分，即零值（n0 / n），这通常是未知的。因此，一些较早的著作由于试图估计n0而与该帖子的主题相关（出于拒绝全局零假设的目的-所有检验均来自其各自的真实零假设）。我们知道，如果空值正确，则p值的绘制在（0,1）上遵循均匀分布。否则，如果测试集合包含一些与真实零值混合在一起的替代假设，则该分布倾向于是混合的，分数n0 / n是从均匀数中抽取的，而（1- n0 / n）是从其他某种分布中抽取的。已开发出一些方法来帮助人们直观地检测出差异/偏离。其中之一是Schweder-Spjøtvoll图，其中p值从最小p（1）到最大p（n）有序，并且它们的等级r（i）被绘制为1-p（i）的函数。在均匀分布下，结果是一条直线穿过原点和点（1，n），如下图所示。当替代假设（相对于零）正确时，p值将接近零而膨胀，因此在下部曲线中，线性接近于1会强烈偏离（p接近零，所以1-p值接近1）。</p>
+
+<p>或者，我们可以绘制p值的经验分布（使用直方图），并查看均匀分布是否存在偏差。均匀分布导致直方图平坦，而任何偏移都将导致偏向0或1。如Walsh和Lynch的书的附录4所述，刚刚介绍的方法还允许从其创建的图推断n0。</p>
+
+<p>GWAS中的多重比较问题比一般情况下更为复杂，这有两个原因-大规模同时比较以及这些比较测试之间的相关性。当代的遗传关联研究可能会测试数十万到数百万个遗传变异的关联，这些变异通常具有多个二元和/或连续性状，或者在一个以上的遗传模型下。由于附近标记之间的连锁不平衡以及性状和模型之间的相关性，许多关联测试可能彼此关联。并且不要忘记，所有这些测试都是在可能没有大量样本的一个公共数据集（即同一组个人）上进行的。如前所述，多重比较问题基于所有测试的p值的联合分布进行统计推断。如果这些检验是独立的，则假设每个检验的零假设为真（每个p值是遵循均匀分布的随机值），则计算p值的联合分布相对容易。但是，如果这些测试是相互依赖的，则计算将变得更加困难，因为p值的零分布会明显偏离均匀性。</p>
+
+<p>那么，我们介绍的方法在这种情况下是如何做的？它们的有效性和效率如何受到影响？当测试关联时，Bonferroni校正过于保守。举一个极端的例子，当所有p值都相同时（如完全依赖的情况），Bonferroni程序的临界值（假设它是alpha /标记数）应仅为alpha。最初的FDR控制程序假定多个测试之间是独立的（Benjamini和Hochberg，1995）。统计噪声中的依赖性仅在推导FDR控制程序时会产生问题，因此只要依赖性结构满足某些约束，就可以解决（Benjamini和Yekutieli，2001）。（请参阅这篇文章）。但是，GWAS的大规模依赖主要是由遗传而不是统计原因引起的，并在FDR数量本身的适用性方面造成了问题（Chen和Storey，2006年）。有人认为，FDR建立在“真实发现”的数量上，而后者在GWAS中通常是模棱两可的–很难确定与性状相关的因果变体的确切数量。因此，将FDR应用于单个性状的多个相关基因座（由于LD）是可疑的。</p>
+
+<p>因此，有必要考虑p值（或各个测试统计数据）的真实依赖性结构，以便得出更强大的控制/校正程序。从统计学上讲，这可以通过应用重采样方法（例如自举和置换方法）来实现，但要承认它们是计算密集型的。从遗传上讲，我们可以对SNP（即LD）之间的依赖性进行建模，并将此信息整合到以前的方法/过程中（例如，Dalmasso等，2008； Wei等，2009； Broberg 2005； Need等，2009）。 ）。让我们从排列测试开始。关于多次比较的p值调整，置换测试被广泛认为是可以与其他估计量和测试进行比较的黄金标准。它在无效假设下生成测试统计数据的经验分布（因此，当统计量的渐近分布未知或难以建模时很有用），同时保持原始的相关结构。通过在数据集中将每个个体的表型随机重新分配给另一个个体（即在受试者之间交换特征标签）来实现对GWAS结果的典型置换测试，从而有效地打破了基​​因型与表型的关系，同时保持了数据集的LD结构。数据的每次随机重新分配都代表在原假设下对个体的一个可能采样，并且此过程重复了预定的次数N，以生成分辨率为N的经验分布。因此，N值为1000的置换过程给出的经验p值在小数位的1/1000之内。给定测试之间的相关性，可以对数据进行多次随机排列和重新分析多次，并将基于排列的结果与原始结果进行比较，从而可以估计观察到与原始结果相同的P值的可能性。该解决方案具有简单性和鲁棒性，因此很有吸引力，通常被认为是分析的黄金标准。但是，在GWAS的情况下，置换可能需要太多的计算时间，因此需要计算效率高的替代方法。给定测试之间的相关性，可以对数据进行多次随机排列和重新分析多次，并将基于排列的结果与原始结果进行比较，从而可以估计观察到与原始结果相同的P值的可能性。该解决方案具有简单性和鲁棒性，因此很有吸引力，通常被认为是分析的黄金标准。但是，在GWAS的情况下，置换可能需要太多的计算时间，因此需要计算效率高的替代方法。给定测试之间的相关性，可以对数据进行多次随机排列和重新分析多次，并将基于排列的结果与原始结果进行比较，从而可以估计观察到与原始结果相同的P值的可能性。该解决方案具有简单性和鲁棒性，因此很有吸引力，通常被认为是分析的黄金标准。但是，在GWAS的情况下，置换可能需要太多的计算时间，因此需要计算效率高的替代方法。</p>
+
+<p>已经开发了一些软件包来执行GWAS研究的排列测试，包括流行的PLINK软件，PRESTO（2008年浏览），PERMORY（）和REM（）。通常，plink软件可以为您提供原始的和排列的p值，尽管它（默认情况下）使用带有滑动窗口的自适应测试策略，如果看起来SNP低于该值，则该窗口允许停止运行所有排列（例如每个SNP为1000）考虑不是“有趣的”；它还具有用于计算maxT的选项，请参见在线帮助。</p>
+
+<p>另一组方法是扩展Bonferroni或FDR调整以考虑测试之间的相关性。当多个测试（例如M）相关时，在测试中观察到特定P值的真实概率较小，因为与独立测试相比，测试统计之间的差异较小，这使得极端测试统计的可能性降低。实际上，好像执行了更少的测试。因此，一个直观的解决方案是估计和利用独立测试的有效数量（M_effs），因为它们是应予纠正的测试。例如，一些研究人员建议计算基因区域中独立SNP的有效数量，并在Bonferroni校正中使用该值（Cheverud 2001; Dudbridge＆Gusnanto，2008; Galwey 2009; Gao et al。，2008; Li and Ji，2004 ; Nyholt 2004）。这种方法被认为比基本的Bonferroni校正要保守一些，并且比置换测试更有效的计算，但是当这种方法应用于GWAS时，其准确性并不令人满意（Dudbridge＆Koeleman 2004； Salyakina等，2005）。毕竟，依靠单个参数无法完全捕获与SNP的全基因组LD一样复杂的相关结构。另一种方法（Conneely＆Boehnke 2007）使用极端尾巴理论来显式计算检测到极端测试统计信息的概率（即，超出预定义的阈值），并且通常比给定级别上基于排列的p值快数千倍。的精度。该方法不假设测试之间具有独立性，但假设所有关联测试统计量的渐近联合分布是具有已知协方差矩阵的多元正态分布。尽管许多常见的关联检验统计量都是渐近多元正态的，但使用渐近分布需要相当大的样本量，可能并不适合所有情况，例如，具有稀有次要等位基因的显性或隐性模型。此方法旨在调整大量1-df测试的最小P值和其他有序P值，因此，如果我们正在寻找少量合理的较大遗传效应，则该方法尤为重要。如果相反，我们期望有很多非常小的影响，则同时进行所有关联的联合分析（基于多重df测试）可能更合适。</p>
+
+<p>在某些情况下，所谓的间隙统计或滑动窗口已被证明是成功的，但是您会在（7）和（8）中找到很好的评论。我也听说过有效利用单倍型结构或LD的方法，例如（9），但我从未使用过。但是，它们似乎与估算标记之间的相关性更为相关，</p>
+
+<p>可以在执行各个测试之前删除旨在改善此依赖性的另一种方法，并且删除此依赖性会在所得测试中生成独立的p值。</p>
+
+<p>控制多个测试以准确估计显着性阈值是涉及许多遗传标记的研究（尤其是GWA研究）的一个非常重要的方面。I型错误（也称为显着性水平或假阳性率）是在原假设为真时拒绝原假设的概率。显着性水平表示调查人员愿意在其研究中容忍的假阳性比例。逐族错误率（FWER）是在一组测试中发生一个或多个I型错误的概率。较低的FWER会限制误报的比例，但会降低在确实存在关联时检测关联的能力。在分析的设计阶段应指定合适的FWER1。然后，重要的是要跟踪执行的统计比较的数量，并针对多个测试校正单个基于SNP的显着性阈值，以维持整体FWER。对于在n个SNP的每一个上应用的关联测试，对于给定的FWER，每个测试的显着性水平α<em>可以使用Bonferroni（α</em> =α/ n）或Sidak15,16（α* = 1 −（1 –α）1 / n）调整。如果测试是独立的，则Sidak校正是准确的。但是，在包含密集标记集的GWA研究中，这不太可能是正确的，因此两种校正都非常保守。Holm17给出了一种类似于Bonferroni校正的但稍微严格一些的替代方法。FWER方法的替代方法包括错误发现率（FDR）程序18、19，这些SNP中假阳性预期比例的控制被宣布为重要。但是，标志物之间的依赖性以及少量的预期真实阳性结果使FDR程序成为GWA研究的难题。替代地，置换方法旨在通过随机化来使零假设正确：本质上，将原始P值与通过重复置换原始检验而随机置换病例对照标签获得的P值的经验分布进行比较20。尽管Bonferroni和Sidak校正通过假设标记之间的独立性提供了一种简单的方法来调整多次测试，但置换测试被认为是精确校正的“黄金标准” 20。置换程序在GWA研究的设置中需要大量计算，此外，仅适用于当前的基因型数据集；因此，除非对整个基因组进行测序，否则它们将无法产生真正的全基因组重要性阈值。还提出了贝叶斯因子来衡量重要性6。为了对密集的SNP和重排数据进行GWA研究，Dudbridge和Gusnanto21提出了针对英国白种人人群的标准全基因组显着性阈值7.2e-8。Hoggart等[22]根据样本量和拟议的FWER提出了当代人口的其他阈值。Dudbridge和Gusnanto21提出了英国高加索人口的全基因组显着性标准阈值7.2e-8。Hoggart等[22]根据样本量和拟议的FWER提出了当代人口的其他阈值。Dudbridge和Gusnanto21提出了英国高加索人口的全基因组显着性标准阈值7.2e-8。Hoggart等[22]根据样本量和拟议的FWER提出了当代人口的其他阈值。最近，公认的标准是5e-8（参考23）。Bonferroni校正使用整个基因组中的所有n个单核苷酸多态性（SNP），但是这种方法是高度保守的，对于不是真正独立的SNP，将“过度校正”。许多SNP位于强连锁不平衡（LD）（“区域”）区域内，不应视为“独立”区域。最近发现，所研究的典型人群具有大约一百万个独立的染色体片段（例如在欧洲人中）。这是基于ENCODE的数据得出的（请注意：在非洲人口中，大约有200万独立的细分受众群）。因此，我们有0.05 / 1e6 = 5e-8。其他研究也得出了相同的数字和建议，并且以这种严格的p值确定的基因座在不同的实验中都难以成立。此外，用于评估观察到的P值是否与预期值一致的图形技术包括对数分位数-分位数P值图，该图突出显示了偏离无效假设的基因座24。</p>
+
+<p>参考文献
+	• Benjamini和Hochberg（1995）控制错误发现率：一种实用且强大的多重测试方法。JRSS（B）57：289-300
+	• Benjamini，Y.和D. Yekutieli，2001年。对依赖项的错误发现率的控制。安 统计 29：1165-1188。
+	• Broberg，P.对未改变基因比例和错误发现率的估计的比较综述。BMC生物信息学2005 6：199。
+	• Browning（2008）PRESTO：通过一阶和两阶段遗传关联研究的排列，快速计算阶次统计量分布并通过排列多次测试调整后的P值。BMC生物信息学9：309
+	• Chen，Lin和John D.Story。“放松关联分析的重要性标准。” 遗传学173.4（2006）：2371-2381。
+	• Cheverud JM：在区间作图基因组扫描中对多个比较进行的简单校正。遗传2001; 87：52-58。
+	• Conneely KN，Boehnke M：如此多的相关测试，所以时间很少！快速调整多个相关测试的p值。美国杂志2007年 81：1158–1168。
+	• C，达宁，E和TrégouetDA。全基因组关联研究中等位基因频率的加权Holm程序。遗传学，2008 180（1）：697-702。
+	• Dudbridge F，Koeleman BP（2004）在大型相关数据研究（包括全基因组关联研究）中有效计算多个关联的显着性水平。我是洪姆（J Hum Humt）75：424–435
+	• Dudbridge F，Gusnanto A（2008）估计全基因组关联扫描的重要阈值。Genet Epidemiol 32：227–234
+	• Galwey NW：一种有效测试数量的新度量，一种用于比较非独立重要性测试系列的实用工具。Genet Epidemiol，2009年；33：559–568。
+	• 高X，Starmer J，马丁ER：使用相关的单核苷酸多态性进行遗传关联研究的多重测试校正方法。Genet Epidemiol，2008年；32：361–369。
+	• Hochberg Y，Benjamini Y（1990）进行多重重要性检验的更强大的程序。Stat Med 9：811–818。
+	• Li J，Ji L：使用相关矩阵的特征值调整多基因座分析中的多重测试。遗传2005；95：221-227。
+	• Nyholt，DR。相互链接不平衡中单核苷酸多态性多重测试的简单校正。我是J Hum Genet。2004 74（4）：765-769。
+	• Salyakina D，Seaman SR，Browning BL，Dudbridge F，Muller-Myhsok B（2005年），对多次测试校正的Nyholt程序的评估。嗡嗡声在这里60：19–25
+	• van den Oord EJ（2008）控制遗传研究中的错误发现。Am J Med Genet B神经精神病学Genet 147B：637–644。
+	• Walsh＆Lynch（将于2015年秋季发布）。数量性状的演变和选择：I.基金会（2014年3月26日，版本）。A4。多重比较：Bonferroni校正和错误发现率
+	• Wei，Z，Sun，W，Wang，K和Hakonarson，H.通过隐马尔可夫模型进行的基因组范围关联研究中的多重检验。生物信息学2009 25（21）：2802-2808。
+	• 校正与测试相关的多个测试的p值（遗传）</p>]]></content><author><name>Yingwei Guo</name></author><category term="教程" /><summary type="html"><![CDATA[如果p值（假设零假设为真，则看到特定检验统计量的特定值的概率）低于预定义的alpha值（通常始终设为），则通常将统计检验称为有效检验，并且拒绝零假设。 0.05。这意味着在5％的情况下，原假设实际上是真的，并且我们检测到假阳性（I型错误），则否定假设被拒绝。每个统计检验都带有这样的概率，但是该概率是相对于一个检验的。“多次比较”或“多次测试”是基于一个以上测试结果做出决策的一般问题（例如，同时考虑一组统计推断）的名称。问题的性质在这篇文章中已经明确（XKCD“绿色软糖”卡通）。关于GWAS，在典型的研究中，同时进行数十万至数百万次测试，每个测试都针对单个标记，并且具有自己的假阳性概率。因此，在整个GWAS分析中发现一个或多个假阳性（即假关联）的累积可能性要高得多。例如，在5％的水平上测试100,000个基因座的关联性时，预计会有5,000个假阳性。如果我们希望总体I类错误（即全家庭错误率）保持在5％，则需要降低每个基因座的显着性水平。]]></summary></entry><entry><title type="html">【统计学】卡方检验和Fisher精确检验</title><link href="http://localhost:4000/chi-square-fisher-exact-test" rel="alternate" type="text/html" title="【统计学】卡方检验和Fisher精确检验" /><published>2022-01-03T00:00:00+08:00</published><updated>2022-01-03T00:00:00+08:00</updated><id>http://localhost:4000/chi-square-fisher-exact-test</id><content type="html" xml:base="http://localhost:4000/chi-square-fisher-exact-test"><![CDATA[<h2 id="什么是卡方检验">什么是卡方检验</h2>
+
+<p>卡方检验是一种用途很广的计数资料的假设检验方法。它属于非参数检验的范畴，主要是比较两个及两个以上样本率( 构成比）以及两个分类变量的关联性分析。其根本思想就是在于比较理论频数和实际频数的吻合程度或拟合优度问题。
+它在分类资料统计推断中的应用，包括：两个率或两个构成比比较的卡方检验；多个率或多个构成比比较的卡方检验以及分类资料的相关分析等。</p>
+
+<p>一、四格表资料的卡方检验
+例1.两组大白鼠在不同致癌剂作用下的发癌率如下表，问两组发癌率有无差别？
+表1</p>
+
+<p>（52 19 39 3） 这四个数据是整个表中的基本资料，其余数据均由此推算出来；这四格资料表就专称四格表（fourfold table），或称2行2列表（2×2 contingency table）。从该资料算出的两组发癌率分别为73.24%和92.86%，两者的差别可能是抽样误差所致，亦可能是两组发癌率（总体率）确有所不同。这里可通过卡方检验来区别其差异有无统计学意义，检验的基本公式为：</p>
+
+<p>式中A为实际数，以上四格表的四个数据就是实际数。T为理论数，是根据检验假设推断出来的；即假设这两组的发癌率本无不同，差别仅是由抽样误差所致。这里可将两组合计发癌率作为理论上的发癌率，即91/113=80.3%，以此为依据便可推算出四格表中相应的四格的理论数。以表1资料为例检验如下。
+检验步骤：
+1.建立检验假设：
+H0：π1=π2；H1：π1≠π2；α=0.05
+2.计算理论数（TRC），计算公式为：
+TRC=nR.nC/n
+式中TRC是表示第R行C列格子的理论数，nR为理论数同行的合计数，nC为与理论数同列的合计数，n为总例数。
+第1行1列： 71×91/113=57.18
+第1行2列： 71×22/113=13.82
+第2行1列： 42×91/113=33.82
+第2行2列： 42×22/113=8.18
+以推算结果，可与原四项实际数并列成表2：
+表2</p>
+
+<p>因为上表每行和每列合计数都是固定的，所以只要用TRC式求得其中一项理论数（例如T1.1=57.18），则其余三项理论数都可用同行或同列合计数相减，直接求出。
+3.计算卡方值按公式代入</p>
+
+<p>=0.47+1.94+0.79+3.28=6.48
+4.查卡方值表求P值
+在查表之前应知本题自由度。按卡方检验的自由度v=（行数-1）（列数-1），则该题的自由度v=（2-1）（2-1）=1，查卡方界值表，找到</p>
+
+<p>，而本题卡方=6.48即卡方＞</p>
+
+<p>，P＜0.05，差异有显著统计学意义，按α=0.05水准，拒绝H0，可以认为两组发癌率有差别。
+通过实例计算，读者对卡方的基本公式有如下理解：若各理论数与相应实际数相差越小，卡方值越小；如两者相同，则卡方值必为零，而卡方永远为正值。又因为每一对理论数和实际数都加入卡方值中，分组越多，即格子数越多，卡方值也会越大，因而每考虑卡方值大小的意义时同时要考虑到格子数。因此自由度大时，卡方的界值也相应增大。</p>
+
+<p>二、四格表卡方值的校正
+卡方值表是数理统计根据正态分布中</p>
+
+<p>的定义计算出来的。是一种近似。在自由度大于1、理论数皆大于5时，这种近似很好；当自由度为1时，尤其当1＜T＜5，而n＞40时，应用以下校正公式：</p>
+
+<p>例2.某医师用甲、乙两疗法治疗小儿单纯性消化不良，结果如表3.试比较两种疗法效果有无差异？
+表3</p>
+
+<p>从表3可见，T1.2和T2.2数值都＜5，且总例数大于40，故宜用校正公式检验。步骤如下：
+1.检验假设：
+H0：π1=π2；H1：π1≠π2；α=0.05
+2.计算理论数：（已完成列入四格表括弧中）
+3.计算卡方值：应用校正公式运算如下：</p>
+
+<p>查卡方界值表，</p>
+
+<p>，故卡方＜</p>
+
+<p>，P＞0.05。按α=0.05水准，接受H0，两种疗效差异无统计学意义。 
+如果不采用校正公式，而用原基本公式，算得的结果卡方=4.068，则结论就不同了。
+如果观察资料的T＜1或n＜40时，四格表资料用上述校正法也不行，可参考预防医学专业用的医学统计学教材中的Fisher精确检验法直接计算概率以作判断。</p>
+
+<p>三、行×列表的卡方检验
+适用于两个组以上的率或百分比差别的显著性检验。其检验步骤与上述相同，简单计算公式如下：</p>
+
+<p>式中n为总例数；A为各观察值；nR和nC为与各A值相应的行和列合计的总数。
+例3.北方冬季日照短而南移，居宅设计如何适应以获得最大日照量，增强居民体质，减少小儿佝偻病，实属重要。胡氏等1986年在北京进行住宅建筑日照卫生标准的研究，对214幢楼房居民的婴幼儿712人体检，检出轻度佝偻病333例，比较了居室朝向与患病的关系。现将该资料归纳如表4作行×列检验。
+表4</p>
+
+<p>该表资料由2行4列组成，称2×4表，可用行×列卡方公式检验。
+（一）检验步骤
+1.检验假设
+H0：四类朝向居民婴幼儿佝偻病患病率相同；H1：四类朝向居民婴幼儿佝偻病患率不同；α=0.05
+2.计算卡方值</p>
+
+<p>3.确定P值和分析
+本题v=（2-1）（4-3）=3，据此查卡方界值表：</p>
+
+<p>，本题卡方=15.08，卡方＞</p>
+
+<p>，P＜0.05，拒绝H0，可以认为居室朝向不同的居民，婴幼儿佝偻病患病率有差异。
+（二）行×列表卡方检验注意事项
+1.一般认为行×列表中不宜有1/5以上格子的理论数小于5，或有小于1的理论数。当理论数太小可采取下列方法处理：①增加样本含量以增大理论数；②删去上述理论数太小的行和列；③将太小理论数所在行或列与性质相近的邻行邻列中的实际数合并，使重新计算的理论数增大。由于后两法可能会损失信息，损害样本的随机性，不同的合并方式有可能影响推断结论，故不宜作常规方法。另外，不能把不同性质的实际数合并，如研究血型时，不能把不同的血型资料合并。
+2.如检验结果拒绝检验假设，只能认为各总体率或总体构成比之间总的来说有差别，但不能说明它们彼此之间都有差别，或某两者间有差别。</p>
+
+<h2 id="fisher-exact-test">Fisher exact test</h2>
+
+<p>Fisher测试某位女士是否能分辨出先放茶再加奶和先放奶再冲茶的味道是否不同。这个测试就是后来著名的Fisher精确检验。
+作为一个数据分析伪从业人员，我对Fisher精确检验很感兴趣， 但一开始就被2*2的实验结果列联表搞蒙了，看不明白这个表格含义所在，为何要弄出这么一个表格来。于是就搜索了Fisher精确检验的详细资料，翻阅资料后把自己的理解用非专业的词汇总结一下。
+Fisher精确检验原理描述：
+假设检验用来检验一次随机实验的结果是否支持对于某个随机实验的假设。具体如下：随机事件发生的概率小于0.05则认定该事件为小概率事件。一般原则认为在某个假设前提下，一次随机实验的结果不会出现小概率事件。若一次随机实验的结果出现了小概率事件则认定该假设不被支持。</p>
+
+<ol>
+  <li>理论依据是：超几何分布（无放回产品抽样实验）：非卡方检验的范畴。超几何分布的一个形象例子是：有N件物品，M件为次品，求取n件，其中有k件为次品的概率。=(M,k)*(N-M,n-k)/(N,n)</li>
+  <li>基本思想是：在2*2列联表中，四格表周边和（即边际分布）计数固定不变的条件下，计算表内4个实际频数变动时的各种组合之概率Pi；而这个具体的实例可以分解出8个类似产品抽样实验的具体实例结果。根据给出的数据可以计算出每个抽样结果基于假设的超几何分布概率。根据其中之一抽样结果的概率，通过假设检验的原则即可推定假设是否成立。
+注：以上两条来源：http://blog.sina.com.cn/s/blog_6b1c9ed50101kh2f.html
+超几何分布是统计学上一种离散概率分布。它描述了由有限个物件中抽出n个物件，成功抽出指定种类的物件的次数（不归还）。称为超几何分布，是因为其形式与“超几何函数”的级数展式的系数有关。
+例如 判断节食与性别是否相关：
+                男        女
+节食                a         b
+不节食              c         d</li>
+</ol>
+
+<p>四格表周边和（即边际分布）计数固定不变的条件下(男性总数固定(a+c)，女性总数不变(b+d)，节食总人数不变(a+c)，不节食总人数不变(c+d))，可以分解出下列超几何分布抽样：</p>
+<ol>
+  <li>一共 （a+b+c+d)人，其中男性(a+c)人, 节食有(a+b)人，则其中节食男性为a人的概率;</li>
+  <li>一共 （a+b+c+d)人，其中男性(a+c)人, 不节食有(c+d)人，则其中不节食男性为c人的概率；</li>
+  <li>一共 （a+b+c+d)人，其中女性(b+d)人, 节食有(a+b)人，则其中节食女性为b人的概率；</li>
+  <li>一共 （a+b+c+d)人，其中女性(b+d)人, 不节食有(c+d)人，则其中不节食女性为d人的概率；</li>
+  <li>一共 （a+b+c+d)人，其中节食(a+b)人, 男性(a+c)人，则其中节食男性为a人的概率；</li>
+  <li>一共 （a+b+c+d)人，其中节食(a+b)人, 女性(b+d)人，则其中节食女性为b人的概率；</li>
+  <li>一共 （a+b+c+d) 人，其中不节食(c+d)人, 男性(a+c)人，则其中不节食男性为c人的概率；</li>
+  <li>一共 （a+b+c+d)人，其中不节食(c+d)人, 女性(b+d)人，则其中不节食女性为d人的概率；</li>
+</ol>
+
+<p>Fisher精确检验是统计显著性检验方法，用于检查两个二进制变量的相关性。所谓二进制变量就是变量的值域只有两个值，例如：性别为男或女；在特定场景下规定变量只有两个可用值，如：规定出行方式为火车或飞机，收入为高或低等。
+Fisher精确检验的例子：</p>
+<ol>
+  <li>两个候选人的得票是否和投票人性别相关。</li>
+  <li>性别和是否节食是否相关。</li>
+  <li>收入高低是否和出行方式（火车/飞机）相关。
+Fisher精确检验适用于样本量n＜40或者理论频数T＜1的情况。（有的也说理论频数小于5就要用Fisher精确检验？）
+其中n为2<em>2列联表的实际发生的总频数（a+b+c+d），理论频数T是指如果原假设成立则每个格子中理论上应该出现的频数。
+对于上述2</em>2列联表而言：a,b,c,d是实际测试的各个格子实际发生的频数，n为2<em>2列联表的实际发生的总频数（a+b+c+d）
+理论频数是指总体的频数，可以根据检验假设的样本数据推断出近似值。 具体方法是，假设原假设成立，两组样本数据差别仅是由抽样误差所致，则两组样本数据的并集的男性所占比率可以作为总体数据中男性所占比率，即理论频率，如下例：
+                           男        女
+   节食&amp;不节食          a+c     b+d       —– 男性所占比率：P=(a+c)/n
+    则 总体理论上男的所占频率（比率）可以用 P 来近似表示。因为原假设成立节食与否与男女性别无关，因此在节食的人中男性比率也应该是P。以此为依据便可推算出四格表中相应的四格的理论数。对于a格的理论频数 (a+b)</em>P = (a+b)<em>(a+c)/n，即所在行的频数之和</em>所在列的频数之和/总频数。</li>
+</ol>]]></content><author><name>Yingwei Guo</name></author><category term="统计学" /><summary type="html"><![CDATA[什么是卡方检验]]></summary></entry><entry><title type="html">【GWAS】利用PLINK软件进行数据清洗和关联分析</title><link href="http://localhost:4000/plink" rel="alternate" type="text/html" title="【GWAS】利用PLINK软件进行数据清洗和关联分析" /><published>2022-01-02T00:00:00+08:00</published><updated>2022-01-02T00:00:00+08:00</updated><id>http://localhost:4000/plink</id><content type="html" xml:base="http://localhost:4000/plink"><![CDATA[<p>## assoc 基本的case/control关联</p>
+
+<p>质量性状数量性状均可，不能加协变量</p>
+
+<p>数据过滤：</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile /2020060179/Sheep/GWAS/all_sample339.snp.filtered2.final.rename.modified --chr-set 26 --recode transpose --out all_sample339.snp.filtered2.final.rename.modified323.filter --maf 0.05 --geno 0.1 --mind 0.1 --hwe 0.001 --autosome-xy --allow-extra-chr</code></p>
+
+<p>整理性状：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cut -d " " -f 1 all_sample339.snp.filtered2.final.rename.modified323.filter.tfam &gt; samples
+for i in `cat samples`; do grep $i /2020060179/Sheep/GWAS/trait_tail_type2 &gt;&gt; tail_wool;done
+sed -i 's/1$/2/g' tail_wool
+sed -i 's/0$/1/g' tail_wool
+</code></pre></div></div>
+
+<p>关联
+ 质量性状，默认基于卡方检验，</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile ../all_sample339.snp.filtered2.final.rename.modified323.filter --pheno tail_wool  --assoc --out tail_wool.assoc --chr-set 26 --allow-no-sex</code></p>
+
+<p>也可以加–fisher进行Fisher精确检验计算精确P值，否则–assoc默认根据chi square分布计算近似P值。
+ 在大样本的情况下（总样本数＞40），可以用chi square检验，若总样本数＜40，单个最小频数＜5，则用fisher检验较为合适。
+ 结果文件格式</p>
+
+<p><img src="https://s2.loli.net/2022/01/21/xZVmKEtcHMJhlwT.png" alt="image.png" />
+<img src="https://s2.loli.net/2022/01/21/tZOzpkSeIXjbsNM.png" alt="image.png" /></p>
+
+<p>or 对于数量性状，基于t检验，对于数量性状来说–assoc结果和–linear以及–logistic中的ADD效应的P值一样。</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile ../all_sample339.snp.filtered2.final.rename.modified323.filter --pheno tail_length --assoc --out tail_length.assoc --chr-set 26 --allow-no-sex</code>
+ 结果文件格式</p>
+
+<p><img src="https://s2.loli.net/2022/01/21/sZhyFwLbnOSH96R.png" alt="image.png" /></p>
+
+<p>协变量为分类变量时，需要转换为虚拟变量/哑变量</p>
+
+<p><img src="https://s2.loli.net/2022/01/21/lm8VPeEAnMXsOKj.png" alt="image.png" /></p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile all_sample339.snp.filtered2.final.rename.modified323.filter --covar ../covariate_for_plink --write-covar --dummy-coding --out ../dummy_covariate_for_plink --chr-set 26</code></p>
+
+<p>## logistic 逻辑回归</p>
+
+<p>用于分类变量，可以添加协变量，基于t检验</p>
+
+<p>PCA结果作为协变量</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile all_sample339.snp.filtered2.final.rename.modified323.filter  --pca --chr-set 26 --maf 0.05 --out all_sample339.snp.filtered2.final.rename.modified323.filter.pca</code></p>
+
+<p>关联</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile ../all_sample339.snp.filtered2.final.rename.modified323.filter --pheno tail_wool  --logistic --covar ../covariate_for_plink --out tail_wool.logistic --chr-set 26 --allow-no-sex</code></p>
+
+<p>## linear 线性回归</p>
+
+<p>用于连续性变量，可以添加协变量，基于t检验
+ 不加协变量</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile ../all_sample339.snp.filtered2.final.rename.modified323.filter --pheno tail_length  --linear  --out tail_length.linear.nocov --chr-set 26 --allow-no-sex</code>
+ 加上协变量校正
+ 协变量格式</p>
+
+<p><img src="https://s2.loli.net/2022/01/21/67BP2ZFnLoEGW9T.png" alt="image.png" /></p>
+
+<p>关联</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile ../all_sample339.snp.filtered2.final.rename.modified323.filter --pheno tail_length  --linear --covar ../covariate_for_plink --out tail_length.linear --chr-set 26 --allow-no-sex</code></p>
+
+<p>可以加上–hide-covar参数，不显示协变量，只显示ADD加性效应。</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile ../all_sample339.snp.filtered2.final.rename.modified323.filter --chr-set 26 --pheno ../all_phenotypes --pheno-name Birth_weight --linear --allow-no-sex --out birth_weight.linear.cov1 --covar ../covariate_for_plink --hide-covar</code></p>
+
+<p>### 所有表型一起做 –all-pheno
+ 表型文件格式</p>
+
+<p><img src="https://s2.loli.net/2022/01/21/y1ESskrJLehld4Y.png" alt="image.png" /></p>
+
+<p>要把里面的尾型记录01替换成12，0会识别成缺失</p>
+
+<p>关联分析</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile all_sample339.snp.filtered2.final.rename.modified323.filter --chr-set 26 --assoc --pheno all_phenotypes --all-pheno --allow-no-sex --out allpheno</code></p>
+
+<p>所有表型一起做一般线性模型</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --bfile /2015010726/Sheep/GWAS_for_HuSheep/02.GWAS/by_GEMMA/all_samples317.filter.sort --chr-set 26 --linear hide-covar --pheno /2015010726/Sheep/GWAS_for_HuSheep/02.GWAS/all_phenotypes.txt --all-pheno --allow-no-sex --out allpheno --covar covariate_for_plink_pca3_age_sib</code></p>
+
+<p>pval equal zero 当有P值为0时，设定最小P值</p>
+
+<p><code class="language-plaintext highlighter-rouge">--output-min-p 1e-99</code>     any p-value below 10^{-99} will be reported as 10^{-99}</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --file /2015010726/Sheep/GWAS_for_Black_Suffolk/01.data/plink/Black_Suffolk.snp.filtered --pheno /2015010726/Sheep/GWAS_for_Black_Suffolk/02.GWAS/all_pheno_mod.grep --pheno-name Chest_width --linear hide-covar --covar ../../covariates_pca3 --chr-set 26 --allow-no-sex --out Chest_width --output-min-p 1e-99</code></p>
+
+<p>### 加上多重检验的关联分析
+ Bonferroni校正</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile all_sample339.snp.filtered2.final.rename.modified323.filter --chr-set 26 --assoc --pheno all_phenotypes  --pheno-name tail_type --allow-no-sex --out type --adjust</code></p>
+
+<p>结果文件格式：</p>
+
+<p><img src="https://s2.loli.net/2022/01/21/LfsRi36DN4jQcaC.png" alt="image.png" /></p>
+
+<p>permutation校正</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile all_sample339.snp.filtered2.final.rename.modified323.filter --chr-set 26 --assoc --pheno all_phenotypes --pheno-name tail_type --allow-no-sex --out type --mperm 10000</code></p>
+
+<p>or</p>
+
+<p><code class="language-plaintext highlighter-rouge">plink --tfile all_sample339.snp.filtered2.final.rename.modified323.filter --chr-set 26 --assoc --pheno all_phenotypes --pheno-name Tail_length --allow-no-sex --out Tail_length_msperm --mperm 10000</code></p>
+
+<p>结果文件</p>
+
+<p><code class="language-plaintext highlighter-rouge">sort -k4,4 -g Tail_length_msperm.qassoc.mperm | head</code></p>
+
+<p><img src="https://s2.loli.net/2022/01/21/J9enaBCoVDMEvzl.png" alt="image.png" /></p>
+
+<p>提取P值
+<code class="language-plaintext highlighter-rouge">awk '{OFS="\t"}{print $1,$3,$9}' tail_length.linear.nocov.assoc.linear | grep -v 'NA' &gt; tail_length.linear.nocov.assoc.linear.pvalue.txt</code></p>
+
+<p>## 可视化</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>library(qqman)
+data &lt;- read.table("C:/Users/Administrator/Desktop/gwas.assoc.txt",header = T) #读取数去存到data变量里面
+colorset&lt;-c("blue4", "orange3")  #创建一个颜色集合
+manhattan(data, CHR = "CHR", BP = "bp", SNP = "SNP", p = "P-VALUE", col = colorset)   #画曼哈顿图
+</code></pre></div></div>
+
+<p>或者服务器上一键式</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>source /2015010726/.bashrc
+export R_LIBS_USER="/2015010726/R/x86_64-conda_cos6-linux-gnu-library/3.5/"
+</code></pre></div></div>
+
+<p>/2015010726/scripts/Manhattan_QQ_plot.R脚本内容：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Object: Manhattan &amp; QQ Plot for genome-wide association study
+Output: Single figure with PDF format
+Authors: Yingwei Guo
+Date: 8th, Jan, 2021
+Usage: Rscript commandArgs()[4] pvalue.txt sites_number traits_name
+
+ 如果报没有qqman这个包的错误，在shell环境运行下面一行命令：
+export R_LIBS_USER="/2015010726/R/x86_64-conda_cos6-linux-gnu-library/3.5/"
+
+library(qqman)
+args &lt;- commandArgs(trailingOnly = TRUE)
+data &lt;- read.table(args[1],header = T) 读取数去存到data变量里面
+colorset &lt;- c("4C72B0", "DD8452")  创建一个颜色集合
+pdf(paste0(args[3], ".pdf"), width = 18,height=4.5)
+layout(matrix(c(1,2), 1, 2, byrow = TRUE),widths=c(3,1), heights=c(1,1))
+par(mar = (c(3,4,2,2)+ 0.5), mgp=c(1.6,1,0))
+par(bty="l", lwd=1.5)   bty=l  the plot is coordinate instead of box
+manhattan(data, CHR = "CHR", BP = "BP", SNP="SNP", p = "P", suggestiveline = F, genomewideline = F, cex = 0.8)   画曼哈顿图，默认是黑色和灰色，加color=colorset可自定义
+sites_number &lt;- as.numeric(args[2])
+abline(h=-log10(0.05/sites_number), lty=5, col="grey40")  自定义阈值线，h=-log10(0.05/sites_number)
+qq(data$P, cex = 0.8)
+dev.off()
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">Rscript /2015010726/scripts/Manhattan_QQ_plot.R</code></p>
+
+<p>P值列不包含NA的GWAS结果文件 位点数 性状名字
+例如：
+<code class="language-plaintext highlighter-rouge">Rscript /2015010726/scripts/Manhattan_QQ_plot.R Birth_weight.pvalue.txt 281613 Birth_weight.mht</code></p>
+
+<p>注释</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>for i in Birth_weight Ear_length Ear_width Nose_width tail_circumference Tail_length teat_number ; do sed -i 's/^27/X/' $i.top;done
+
+for i in Birth_weight Ear_length Ear_width Nose_width tail_circumference Tail_length teat_number ; do cut -f 1-2 $i.top |bcftools view -R - /2020055372/sheep_data/call_VCF/all_sample339.snp.filtered2.final.rename.vcf.gz -Oz -o $i.top.vcf.gz ;done
+
+for i in Birth_weight Ear_length Ear_width Nose_width tail_circumference Tail_length teat_number ; do perl /2015010726/software/annovar/table_annovar.pl -buildver OAR4.0 -protocol refGene -operation g -vcfinput $i.top.vcf.gz  /2015010726/Sheep/reference/Oar4.0/annovar_db/ -outfile $i.top; done
+
+for i in Birth_weight Ear_length Ear_width Nose_width tail_circumference Tail_length teat_number ; do sed '1d' $i.top.OAR4.0_multianno.txt | cut -f 1-2,4-10 |csvtk join -t -f "1,2;1,2" -k $i.top - -T &gt; $i.p_anno.txt;done
+</code></pre></div></div>]]></content><author><name>Yingwei Guo</name></author><category term="教程" /><summary type="html"><![CDATA[## assoc 基本的case/control关联 质量性状数量性状均可，不能加协变量]]></summary></entry><entry><title type="html">【GWAS】利用EMMAX软件进行GWAS</title><link href="http://localhost:4000/emmax" rel="alternate" type="text/html" title="【GWAS】利用EMMAX软件进行GWAS" /><published>2022-01-01T00:00:00+08:00</published><updated>2022-01-01T00:00:00+08:00</updated><id>http://localhost:4000/emmax</id><content type="html" xml:base="http://localhost:4000/emmax"><![CDATA[<p>Step1 ：
+其实所有软件的使用方法基本上都是三部分：软件名字    输入文件   参数    输出文件   ，软件名字不用管，只需要把后面三个搞清楚就可以</p>
+
+<p>1.<code class="language-plaintext highlighter-rouge"> /home/cngbdb011/Softwares/miniconda3/bin/plink --file SNP50_Breedv4 --recode --chr-set 26 --keep need_samples --out need_samples</code></p>
+
+<p>这一步是把我们需要的样本从大的集合中提取出来，核心参数就是<code class="language-plaintext highlighter-rouge">--keep</code>，输入文件就是下载的那个大集合，名字就是<code class="language-plaintext highlighter-rouge">SNP50_breedV</code>  ，输出文件就是我们需要的样本集合，这个可以自定义</p>
+
+<p><code class="language-plaintext highlighter-rouge">--file</code> 选取ped和map文件的前缀</p>
+
+<p><code class="language-plaintext highlighter-rouge">--recode</code> 控制输出格式的参数，recode的话输出文件就是ped和map两个文件，</p>
+
+<p><code class="language-plaintext highlighter-rouge">--chr-set</code> plink是针对人开发设计的，所以它默认文件里面染色体数只能1-23，如果是其他物种的话，你要给他染色体数，不然会报错</p>
+
+<p><code class="language-plaintext highlighter-rouge">--keep</code> 后面跟需要的样本的FID和IID，两列，和ped文件中前两列的格式相同。</p>
+
+<p><code class="language-plaintext highlighter-rouge">--out</code>  就是输出文件的名字，可以自定义，这里我们就叫<code class="language-plaintext highlighter-rouge">need_samples</code>。这个运行完会看到<code class="language-plaintext highlighter-rouge">need_samples</code>开头的<code class="language-plaintext highlighter-rouge">ped</code> <code class="language-plaintext highlighter-rouge">map</code> 两个文件</p>
+
+<p>2.<code class="language-plaintext highlighter-rouge">/home/cngbdb011/Softwares/miniconda3/bin/plink --file need_samples --output-missing-genotype 0 --recode12 --transpose --out need_samples --allow-extra-chr --chr-set 26</code></p>
+
+<p>这一步给我们的文件转置一下，emmax需要转置后的plink文件格式（本来是ped和map，转置之后就变成tped和tfam了），所以我们就转化一下格式，核心参数就是<code class="language-plaintext highlighter-rouge">--transpose</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">--output-missing-genotype</code>是说把里面基因型缺失的用0表示，</p>
+
+<p><code class="language-plaintext highlighter-rouge">--recode12</code> 把AGCT这种基因型用12表示，和参考基因组一样的用1，不一样的用2，我不知道是不是一定要变成数字形式的，我看他ppt上转了就跟着转了，你可以试一下不转数字行不行，就是直接去掉这个参数。</p>
+
+<p><code class="language-plaintext highlighter-rouge">--transpose</code>和<code class="language-plaintext highlighter-rouge">--recode</code>一样都是控制输出文件格式的，recode的话输出文件就是ped和map两个文件，而–transpose就是输出tped和tfam格式的文件，transpose  动词，名词，调换 转置的意思</p>
+
+<p><code class="language-plaintext highlighter-rouge">--allow-extra-chr</code> 里面有XY染色体的话他会报错，加上这个参数的话他就把性染色体变成27 28号了
+ 这步生成的输出文件是tped和tfam结尾的两个文件</p>
+
+<p>3.<code class="language-plaintext highlighter-rouge">/home/cngbdb011/Softwares/miniconda3/bin/plink --file need_samples --pca --chr-set 26 --maf 0.05 --out need_samples.pca</code></p>
+
+<p>我们GWAS的时候要把群体的分层作为固定效应中的协方差，群体分层就用PCA，也就是主成分分析，他是一种降维手段，把高维的数据解析成效应较高的前几个主要维度</p>
+
+<p><code class="language-plaintext highlighter-rouge">--pca</code>就是这步的主要参数，给这个参数他会自动去做PCA，</p>
+
+<p><code class="language-plaintext highlighter-rouge">--maf 0.05</code> MAF是指minor allele frequency，即最小等位基因频率，MAF过小的话，说明这个SNP在群体中的频率很低，很多个体就没有这个变异，我们先把他过滤掉。
+ 这步运行完了会生成一个<code class="language-plaintext highlighter-rouge">pca.eigenvec</code> 和 <code class="language-plaintext highlighter-rouge">pca.eigenval</code>这两个结尾的文件</p>
+
+<p>4.<code class="language-plaintext highlighter-rouge">awk '{print $1,$2,1,$3,$4,$5}' OFS="\t" need_samples.pca.eigenvec &gt; covariate</code></p>
+
+<p>上一步的结果还不是emmax需要的文件格式，它需要家系名字，样本名，1（固定格式）和前三个主成分，所以我们这里用awk简单处理一下，把需要的几列取出来。</p>
+
+<p>5.<code class="language-plaintext highlighter-rouge">/home/cngbdb011/Softwares/emmax/emmax-kin -v -s -d 10 need_samples</code></p>
+
+<p>除了群体分层的固定效应，还有亲缘关系所导致的随机效应，所以要计算一下亲缘关系矩阵</p>
+
+<p><code class="language-plaintext highlighter-rouge">-v</code>是指verbose模式，他会把处理过程的详细信息打印到命令行，当然不加这个参数结果也一样。</p>
+
+<p><code class="language-plaintext highlighter-rouge">-s</code>就是计算亲缘关系矩阵的参数</p>
+
+<p><code class="language-plaintext highlighter-rouge">-d</code> precision of the kinship values，亲缘关系的精度，默认是10，我们就用10就好</p>
+
+<p>最后给输入文件，他会自动生成.aIBS.kinf结尾的输出文件，那个就是亲缘关系矩阵的文件
+ 这里我们虽然换了一下新软件，但是使用方法还是差不多，大同小异的，也是给输入，参数，输出，只不过输出文件是他默认生成的，我们不需要给（其实也可以给），输入文件放到了最后</p>
+
+<p>6.<code class="language-plaintext highlighter-rouge">/home/cngbdb011/Softwares/emmax/emmax -v -d 10 -t need_samples -p trait -k need_samples.aIBS.kinf -c covariate -o gwas.trait</code></p>
+
+<p>前期都是文件准备工作，这一步就是关联分析，</p>
+
+<p><code class="language-plaintext highlighter-rouge">-t</code>参数后面跟 我们转置好的tped和tfam文件的前缀</p>
+
+<p><code class="language-plaintext highlighter-rouge">-p</code>给他表型文件，这个文件是自己做的，基本格式就是 FID IID trait 三列</p>
+
+<p>比如我们想做高原适应性，可以这样</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>TIB_familyid1 TIB_individulid1 1
+TIB_familyid2 TIB_individulid2 1
+non_TIB_familyid1 non_TIB_individulid1 0
+non_TIB_familyid2 non_TIB_individulid2 0
+</code></pre></div></div>
+
+<p>就是把高原的表型定位1，非高原的表型定位0，，FID和IID我随便写的，你看原文件里面是什么就写什么</p>
+
+<p><code class="language-plaintext highlighter-rouge">-k</code>后面跟上一步算亲缘关系的文件，</p>
+
+<p><code class="language-plaintext highlighter-rouge">-c</code> 后面是协方差那个文件</p>
+
+<p><code class="language-plaintext highlighter-rouge">-o</code> 加输出文件名字</p>
+
+<p>7.<code class="language-plaintext highlighter-rouge">cut -d" " -f1-4 need_samples.tped |paste - gwas.trait.ps | awk '{print $1,$4,$8}' OFS="\t" | sed  '1i\CHR\tBP\tP-VALUE' |awk '$2!=0' &gt; gwas.assoc.txt</code></p>
+
+<p>这时候已经有结果了，但是画图的话需要转换一下格式，先用cut把tped文件前四列cut出来，因为里面有样本名，然后和gwas.trait.ps合并在一起，cat是上下合并，paste是左右合并， -是指管道前面的输出，就是上一个命令的输出文件，但是我们没有保存成文件，而是变成了数据流，通过 | 这个管道，他可以直接被下个命令利用和处理。
+ 然后同样把处理好的管道给下一个命令，awk取出来1 4 8 这三列，然后在第一行加一个表头， sed ‘1i 什么什么’  就是在第一行进行插入，这里我们插入了CHR\tBP\tP-VALUE  ，，\t是指的tab键，类似于在word里面按tab，
+ 这时候你会发现前面几个文件他们的位置（就是第二列）都是0，，是因为芯片上的某些点没有在染色体上，这些我们就直接不要就好了，所以awk ‘$2!=0’ 意思是只要第二列不等于0 的  把它重定向到一个文件中gwas.assoc.txt
+ ppt中他是分开写了，我合并到一起了，你可以cut -d” “ -f1-4 need_samples.tped |less 这样暂时查看一下输出内容，每一步你都可以跟一个less  ，，cut -d” “ -f1-4 need_samples.tped |paste - gwas.trait.ps |less  ，，一步一步看下你就知道了。</p>
+
+<p>8.打开R studio</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>library(qqman)
+data &lt;- read.table("C:/Users/Administrator/Desktop/gwas.assoc.txt",header = T) # 读取数去存到data变量里面
+colorset&lt;-c("blue4", "orange3")  # 创建一个颜色集合
+manhattan(data, CHR = "CHR", BP = "bp", SNP = "SNP", p = "P-VALUE", col = colorset)   # 画曼哈顿图
+</code></pre></div></div>]]></content><author><name>Yingwei Guo</name></author><category term="教程" /><summary type="html"><![CDATA[Step1 ： 其实所有软件的使用方法基本上都是三部分：软件名字 输入文件 参数 输出文件 ，软件名字不用管，只需要把后面三个搞清楚就可以]]></summary></entry><entry><title type="html">SNP Calling</title><link href="http://localhost:4000/snp-calling" rel="alternate" type="text/html" title="SNP Calling" /><published>2021-12-12T00:00:00+08:00</published><updated>2021-12-12T00:00:00+08:00</updated><id>http://localhost:4000/snp-calling</id><content type="html" xml:base="http://localhost:4000/snp-calling"><![CDATA[<p>01.QC
+02.REFERENCE INDEX
+03.MAPPING
+04.CALLING
+05.FILTER
+06.CONCATENATE
+07.ANNOTATION 
+08.PRUNE
+09.PHASE
+10.IMPUTATION</p>
+
+<h2 id="01qc">01.QC</h2>
+
+<p><code class="language-plaintext highlighter-rouge">/stor9000/apps/users/NWSUAF/2016050001/software/fastp -i ${1}_1.fq.gz -I ${1}_2.fq.gz -o ${1}_1.clean.fq.gz -O ${1}_2.clean.fq.gz -h ${1}.html</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">-n 5 -q 15 -u 40</code>
+去除接头序列(adapter);
+当测序read中含有的N的含量超过该条read长度比例的5%时，需要去除此对paired reads；
+当测序read中含有的低质量（Q ≤15）碱基数超过该条read长度比例的40% 时，需要去除此对paired reads。
+<a href="https://github.com/OpenGene/fastp">fastp</a></p>
+
+<h2 id="02reference-index">02.REFERENCE INDEX</h2>
+
+<p>1.Generate the BWA index using BWA. This will create the “.fasta.amb”, “.fasta.ann”, “.fasta.bwt”, “.fasta.pac” and “.fasta.sa” files.
+<code class="language-plaintext highlighter-rouge">bwa index GCF_002742125.1_Oar_rambouillet_v1.0_genomic.rename.AddY.fna</code></p>
+
+<p>2.Generate the FASTA file index using samtools. This will create the “.fasta.fai” file.
+<code class="language-plaintext highlighter-rouge">samtools faidx GCF_002742125.1_Oar_rambouillet_v1.0_genomic.rename.AddY.fna</code></p>
+
+<p>3.Generate the sequence dictionary using Picard. This will create the “.dict” file.
+<code class="language-plaintext highlighter-rouge">/stor9000/apps/appsoftware/BioSoftware/bin/java -jar bin/picard_2.18.17.jar CreateSequenceDictionary R=GCF_002742125.1_Oar_rambouillet_v1.0_genomic.rename.AddY.fna O=GCF_002742125.1_Oar_rambouillet_v1.0_genomic.rename.AddY.dict</code></p>
+
+<h2 id="03mapping">03.MAPPING</h2>
+<p>define variable</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export sm=${1}
+export fq1=${2}
+export fq2=${3}
+export ref=Sheep/reference/Oar4.0/Oar4.0_add_CPY_for_target_seq/Oar4.0_add_CPY.fa
+</code></pre></div></div>
+
+<p>mapping</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/Software/bwa-0.7.17/bwa mem \
+-t 4 \
+-R '@RG\tID:'${sm}'\tLB:'${sm}'\tPL:ILLUMINA\tSM:'${sm} \
+${ref} \
+${fq1} \
+${fq2} \
+| /Software/samtools1.9/bin/samtools view -bS -o ${sm}.bam
+</code></pre></div></div>
+<p>sort</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/stor9000/apps/appsoftware/BioSoftware/bin/java \
+-Xmx10g \
+-Djava.io.tmpdir=files/tmp \
+-Dpicard.useLegacyParser=false \
+-jar bin/picard_2.18.17.jar \
+SortSam \
+-I ${sm}.bam \
+-O ${sm}.sort.bam \
+-SORT_ORDER coordinate \
+-VALIDATION_STRINGENCY LENIENT
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dedup 去除PCR重复
+/stor9000/apps/appsoftware/BioSoftware/bin/java \
+-Xmx10g \
+-Djava.io.tmpdir=files/tmp \
+-Dpicard.useLegacyParser=false \
+-jar bin/picard_2.18.17.jar \
+MarkDuplicates \
+-I ${sm}.sort.bam \
+-O ${sm}.dedup.bam \
+-ASSUME_SORT_ORDER coordinate \
+-METRICS_FILE ${sm}.dedup.txt \
+-VALIDATION_STRINGENCY LENIENT
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># index bam
+/stor9000/apps/users/NWSUAF/2014010784/software/samtools/samtools-1.12/samtools index ${sm}.dedup.bam
+# realign Indel区域的重新比对
+/stor9000/apps/appsoftware/BioSoftware/bin/java \
+-Xmx10g \
+-Djava.io.tmpdir=files/tmp \
+-jar bin/GATK3.7/GenomeAnalysisTK.jar \
+-T RealignerTargetCreator \
+-I ${sm}.dedup.bam \
+-R ${ref} \
+-o ${sm}.intervals
+
+/stor9000/apps/appsoftware/BioSoftware/bin/java \
+-Xmx10g \
+-Djava.io.tmpdir=files/tmp \
+-jar bin/GATK3.7/GenomeAnalysisTK.jar \
+-T IndelRealigner \
+-I ${sm}.dedup.bam \
+-R ${ref} \
+-targetIntervals ${sm}.intervals \
+-o ${sm}.realign.bam
+
+</code></pre></div></div>
+
+<h2 id="04calling">04.CALLING</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export sm=${1}
+export chr=${3}
+export bam=${2}
+export ref=Sheep/reference/Oar4.0/Oar4.0_add_CPY_for_target_seq/Oar4.0_add_CPY.fa
+bin/gatk-4.1.2.0/gatk \
+--spark-runner LOCAL \
+--java-options "-Djava.io.tmpdir=files/tmp -Xmx10G" \
+**HaplotypeCaller** \
+-R ${ref} \
+-I ${bam} \
+-ERC GVCF \
+-L ${chr} \
+-O 01.gvcf/${sm}/${sm}.${chr}.gvcf.gz
+
+export chr=${1}
+export ref=Sheep/reference/Oar4.0/Oar4.0_add_CPY_for_target_seq/Oar4.0_add_CPY.fa
+
+bin/gatk-4.1.2.0/gatk \
+--java-options "-Djava.io.tmpdir=files/tmp -Xmx10G" \
+**CombineGVCFs** \
+-R ${ref} \
+--variant files/snp_calling/04.calling/01.gvcf/GJ01429/GJ01429.chr${chr}.gvcf.gz \
+--variant files/snp_calling/04.calling/01.gvcf/GJ01741/GJ01741.chr${chr}.gvcf.gz \
+--output 02.merged_gvcf/chr${chr}.gvcf.gz
+
+export chr=${1}
+export ref=Sheep/reference/Oar4.0/Oar4.0_add_CPY_for_target_seq/Oar4.0_add_CPY.fa
+bin/gatk-4.1.2.0/gatk \
+--java-options "-Djava.io.tmpdir=files/tmp -Xmx10G" \
+**GenotypeGVCFs** \
+-R ${ref} \
+--variant 02.merged_gvcf/chr${chr}.gvcf.gz \
+--output 03.vcf/chr${chr}.vcf.gz
+
+</code></pre></div></div>
+<h2 id="05filter">05.FILTER</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bcftools view \
+-v snps \
+-e 'QD &lt; 2.0 | QUAL &lt; 30.0 | SOR &gt; 3.0 | FS &gt; 60.0 | MQ &lt; 40.0 | MQRankSum &lt; -12.5 | ReadPosRankSum &lt; -8.0 ' \
+-m2 -M2 \
+../04.calling/03.vcf/chr${1}.vcf.gz \
+-Oz \
+-o chr${1}.filtered.vcf.gz
+
+
+#bcftools view -i 'F_MISSING &lt; 0.1 &amp; MAF &gt; 0.05' vcf -Oz -o filter.vcf
+
+</code></pre></div></div>]]></content><author><name>Yingwei Guo</name></author><category term="教程" /><summary type="html"><![CDATA[01.QC 02.REFERENCE INDEX 03.MAPPING 04.CALLING 05.FILTER 06.CONCATENATE 07.ANNOTATION 08.PRUNE 09.PHASE 10.IMPUTATION]]></summary></entry><entry><title type="html">【算法】贪婪算法和动态规划</title><link href="http://localhost:4000/ga-dp" rel="alternate" type="text/html" title="【算法】贪婪算法和动态规划" /><published>2021-11-06T00:00:00+08:00</published><updated>2021-11-06T00:00:00+08:00</updated><id>http://localhost:4000/ga-dp</id><content type="html" xml:base="http://localhost:4000/ga-dp"><![CDATA[<p><img src="https://s2.loli.net/2022/01/21/Vjb86eKWkqXP9SH.png" alt="幻灯片1.PNG" />
+<img src="https://s2.loli.net/2022/01/21/tswoeK2iXSdHzLb.png" alt="幻灯片2.PNG" />
+<img src="https://s2.loli.net/2022/01/21/g2BZHzwrUTXNtcs.png" alt="幻灯片3.PNG" />
+<img src="https://s2.loli.net/2022/01/21/v2sfVcwI9ZML7Di.png" alt="幻灯片4.PNG" />
+<img src="https://s2.loli.net/2022/01/21/zqujRKPcsalbJHe.png" alt="幻灯片5.PNG" />
+<img src="https://s2.loli.net/2022/01/21/YALX2sJKo16pxZ5.png" alt="幻灯片6.PNG" />
+<img src="https://s2.loli.net/2022/01/21/I43gjro76akB1Ri.png" alt="幻灯片7.PNG" />
+<img src="https://s2.loli.net/2022/01/21/4TkHipDaG3UeyuV.png" alt="幻灯片8.PNG" />
+<img src="https://s2.loli.net/2022/01/21/8QMR3h9iDtECPwL.png" alt="幻灯片9.PNG" />
+<img src="https://s2.loli.net/2022/01/21/szUw8cFZQM6TSNG.png" alt="幻灯片10.PNG" />
+<img src="https://s2.loli.net/2022/01/21/bMZjo9stWyPuRre.png" alt="幻灯片11.PNG" />
+<img src="https://s2.loli.net/2022/01/21/O4UTuDLgP61jiw9.png" alt="幻灯片12.PNG" />
+<img src="https://s2.loli.net/2022/01/21/IvunhDS41TM6cts.png" alt="幻灯片13.PNG" /></p>]]></content><author><name>Yingwei Guo</name></author><category term="教程" /><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">【Python】批量提取指定网站上的特定信息</title><link href="http://localhost:4000/extarct-info" rel="alternate" type="text/html" title="【Python】批量提取指定网站上的特定信息" /><published>2021-10-10T00:00:00+08:00</published><updated>2021-10-10T00:00:00+08:00</updated><id>http://localhost:4000/extarct-info</id><content type="html" xml:base="http://localhost:4000/extarct-info"><![CDATA[<h2 id="介绍">介绍</h2>
+
+<blockquote>
+  <p>理论上，凡是<strong>重复且有规律</strong>的事情都可以用编程来解决，编程的优势也在于可以大大降低我们在繁琐事情上所耗费的时间和精力。</p>
+</blockquote>
+
+<p><img src="https://img-blog.csdnimg.cn/24010210922f432588e8a379cddb01d5.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5Ya35pyI44CB5peg5aOw,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述" /></p>
+
+<p>例如上图的网页，其中包含的表格有四千多页，并且没有提供所有表格信息的下载按钮，只能一页一页去复制，这时候，我们用爬虫就可以非常简单地解决这个问题：利用requests库获取网页内容，利用beautifulsoup库解析和获取网页中我们需要的信息，最后将其输入到一个文件中，针对多个网页只需要循环上述步骤即可。</p>
+<h2 id="脚本内容">脚本内容</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+</span><span class="s">'''
+Author: Guo Yingwei
+Date: 2021-10-09 16:40:07
+E-mail: willgyw@126.com
+Description:  
+LastEditors: gyw
+LastEditTime: 2021-10-09 20:57:34
+'''</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<span class="kn">import</span> <span class="nn">requests.packages.urllib3</span>
+<span class="c1">#import codecs
+</span><span class="kn">import</span> <span class="nn">re</span>
+
+<span class="k">def</span> <span class="nf">get_page</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">kv</span> <span class="o">=</span> <span class="p">{</span><span class="s">'user-agent'</span><span class="p">:</span><span class="s">'Mozilla/5.0'</span><span class="p">}</span>
+        <span class="n">requests</span><span class="p">.</span><span class="n">packages</span><span class="p">.</span><span class="n">urllib3</span><span class="p">.</span><span class="n">disable_warnings</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">headers</span> <span class="o">=</span> <span class="n">kv</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="n">r</span><span class="p">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="n">apparent_encoding</span>
+        <span class="k">return</span> <span class="n">r</span><span class="p">.</span><span class="n">text</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">'错误'</span>
+
+<span class="k">def</span> <span class="nf">parse_html</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s">'html.parser'</span><span class="p">)</span>    
+    <span class="n">gene_list</span> <span class="o">=</span> <span class="n">soup</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">'table'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">'class'</span><span class="p">:</span> <span class="s">'table table-bordered table-striped'</span><span class="p">}).</span><span class="n">find</span><span class="p">(</span><span class="s">'tbody'</span><span class="p">).</span><span class="n">find_all</span><span class="p">(</span><span class="s">'tr'</span><span class="p">)</span>
+    <span class="n">return_lines_lst</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">gene</span> <span class="ow">in</span> <span class="n">gene_list</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">gene</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">'th'</span><span class="p">).</span><span class="n">find</span><span class="p">(</span><span class="s">'a'</span><span class="p">).</span><span class="n">find</span><span class="p">(</span><span class="s">'i'</span><span class="p">).</span><span class="n">get_text</span><span class="p">()</span>
+        <span class="n">td_lst</span> <span class="o">=</span> <span class="n">gene</span><span class="p">.</span><span class="n">find_all</span><span class="p">(</span><span class="s">'td'</span><span class="p">)</span>
+        <span class="n">info_lst</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">td</span> <span class="ow">in</span> <span class="n">td_lst</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="n">search</span><span class="p">(</span><span class="s">'(?&lt;="&gt;).*?(?=&lt;/td&gt;)'</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">td</span><span class="p">)).</span><span class="n">group</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">info</span> <span class="o">==</span> <span class="s">''</span><span class="p">:</span>
+                    <span class="n">info</span> <span class="o">=</span> <span class="s">'NAN'</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s">'NAN'</span>
+            <span class="n">info_lst</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+        <span class="n">return_lines</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s">'</span><span class="se">\t</span><span class="s">'</span> <span class="o">+</span> <span class="s">'</span><span class="se">\t</span><span class="s">'</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">info_lst</span><span class="p">)</span> <span class="o">+</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span>
+        <span class="n">return_lines_lst</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">return_lines</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">return_lines_lst</span>
+
+<span class="k">def</span> <span class="nf">write_file</span><span class="p">(</span><span class="n">return_lines_lst</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'all_gene.txt'</span><span class="p">,</span><span class="s">'a+'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fo</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">return_lines</span> <span class="ow">in</span> <span class="n">return_lines_lst</span><span class="p">:</span>
+            <span class="n">fo</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">return_lines</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">start_url</span> <span class="o">=</span> <span class="s">'https://gdap.org.cn/allgene.php?page='</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="n">get_page</span><span class="p">(</span><span class="n">start_url</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">lines_lst</span> <span class="o">=</span> <span class="n">parse_html</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+        <span class="c1">#print(lines_lst)
+</span>        <span class="n">write_file</span><span class="p">(</span><span class="n">lines_lst</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div></div>]]></content><author><name>Yingwei Guo</name></author><category term="爬虫" /><summary type="html"><![CDATA[介绍]]></summary></entry><entry><title type="html">【转载】如何回复专利审查意见通知书</title><link href="http://localhost:4000/patent-reply" rel="alternate" type="text/html" title="【转载】如何回复专利审查意见通知书" /><published>2021-04-20T00:00:00+08:00</published><updated>2021-04-20T00:00:00+08:00</updated><id>http://localhost:4000/patent-reply</id><content type="html" xml:base="http://localhost:4000/patent-reply"><![CDATA[<p>假设我们的专利是一件发明专利。</p>
+
+<p>专利写好交上去之后会依次经历两种不同级别的审查，
+首先是初步审查，简称初审；之后是实质审查，简称实审。</p>
+
+<p>初审就是形式审查，审查员在这一阶段会看一下申请文件是否齐备，形式上是否符合标准，费用是否缴纳。如果在初步审查中审查员发现存在申请文件不全或盖章、签名不符合规定等形式问题，专利局会发出补正通知书，由申请人进行补正，补正通知书的答复没有技术含量，而且如果申请递交之前认真核查一下申请文件，初审一般都能过的，上述补正通知书的答复我们就不在此讨论了。
+初审过后就是实审了，很多自己申请发明的申请人都是卡在实审这一步了。实审的时候审查员会给你找几个对比文件，把你的权利要求拆成一句一句的，然后每一句都找出对比文件中的一句话或一段话来证明你的发明弱爆了之前都有。</p>
+
+<p>审查员主要会用以下套路：
+“人家这个公开了什么东西，相当于你这个”
+“人家这个虽然没有直接公开你这个，但隐含公开了什么东西，还是相当于你这个”
+“你这个是本领域技术人员的常规选择，是惯用技术手段，是公知常识”
+“对比文件1公开了什么东西，对比文件2公开了什么东西，二者结合相当于你这个”。
+没有答复经验的申请人看完审查意见通知书后基本都是一脸懵逼，常见的反应有两种，第一种是觉得自己被审查员吊打了，自己申请的专利确实没有创造性，早就有一样的专利了，就不继续申请了；第二种是觉得审查员懂个屁，完全没有get到自己的发明点，对比文件跟自己的方案完全是两码事，于是开始答复审查意见，说审查员说的不对，我的方案跟你想的不一样，跟对比文件也不一样，洋洋洒洒写了几页纸，结果过了俩月收到了驳回通知。</p>
+
+<p>那么究竟如何答复审查意见才能说服审查员给自己的专利授权呢？
+把握好3个原则、1个秘笈和1个套路即可，简称为“1套1秘3原则”。</p>
+
+<p>先说三原则：
+原则1，开头结尾要客气。
+你专利授权与否很大程度上是审查员说了算的，而审查员其实是要遵守驳回率指标的，现在国家规定每年获得授权的专利不能太多，所以审查员每年要保证一定的驳回率，达不到这个驳回率人家是要扣钱的，给你授权了审查员的业绩可能就受影响了，你说你是不是应该跟人家客气点？要是一上来就说，审查员你懂个屁，那就很尴尬了。
+所以开篇可以来一段：
+尊敬的审查员先生/女士：
+首先对审查员为本申请严格、细致的审查所付出的辛勤劳动表示衷心感谢！关于您对本申请发出的审查意见通知书，申请人已详细阅读过，并根据您的审查意见进行如下说明：
+结尾可以来一段：
+综上所述，本申请人认为权利要求书已经克服了审查意见中提及的各个问题，因此还请审查员在该申请文件的基础上作进一步审查，并在考虑以上陈述意见后授予本申请专利权。如果审查员认为该申请仍有不符合专利法及其实施细则规定之处，还请再次给予陈述意见/修改的机会，谢谢！
+跟人家开头结尾客气客气，不算过分。</p>
+
+<p>原则2，面对审查员的错误要有底气。
+审查员很多时候为了评述我们的专利不具备创造性，常常会牵强附会扭曲客观事实，其实他自己也清楚自己的观点有些站不住脚，不过很多申请人往往只看审查意见中审查员的一面之词，好一点的可能会看一下对比文件，但也很少把对比文件的方案充分全面地去理解，只看一下与自己的专利相关的部分，这种处理方式很容易被审查员的观点说服。所以我们拿到审查意见之后，先通读一遍，看审查员找了哪几篇对比文件，自己仔细看一下对比文件，之后重点研究审查员说的那些“相当于”是否真的“相当于”(如何具体判断之后来说)，如果发现审查员在鬼扯，一定要重点强调，加黑加粗下划线地强调，语气可稍显强硬掷地有声，要让审查员真切地感受到他在这个地方没能唬住你，可以这么说：
+申请人无法认同审查员的以下观点：
+审查员认为……对此，申请人无法认同，理由如下：</p>
+
+<p>原则3，答复要有条理有层次。
+对于每一个区别技术特征的争辩，主要有以下几个层次：首先展开来说技术特征的不同，其次展开来说要解决的技术问题不同，其次展开来说达到的技术效果不同，之后退一步讲即使认同审查员的某些观点二者仍不能相当于（本层次为高阶可选，往往能够起到致命一击的奇效），最后展开说明本特征不为公知常识。
+所谓1个秘笈，是指大大降低专利被驳回风险的秘笈。
+想必这是申请人最关心的事情了，因为一旦收到驳回通知书，大部分申请人的信心就被彻底击垮了。其实我们完全能够在答复阶段大大降低专利被驳回的可能性，是不是听起来很牛。</p>
+
+<p>《专利审查指南》明确规定了驳回条件：
+审查员在作出驳回决定之前，应当将其经实质审查认定申请属于专利法实施细则第五十三条规定的应予驳回情形的事实、理由和证据通知申请人，并给申请人至少一次陈述意见和／或修改申请文件的机会。驳回决定一般应当在第二次审查意见通知书之后才能作出。但是，如果申请人在第一次审查意见通知书指定的期限内未针对通知书指出的可驳回缺陷提出有说服力的意见陈述和／或证据，也未针对该缺陷对申请文件进行修改或者修改仅是改正了错别字或更换了表述方式而技术方案没有实质上的改变，则审查员可以直接作出驳回决定。如果申请人对申请文件进行了修改，即使修改后的申请文件仍然存在用已通知过申请人的理由和证据予以驳回的缺陷，但只要驳回所针对的事实改变，就应当给申请人再一次陈述意见和／或修改申请文件的机会。但对于此后再次修改涉及同类缺陷的，如果修改后的申请文件仍然存在足以用已通知过申请人的理由和证据予以驳回的缺陷，则审查员可以直接作出驳回决定，无需再次发出审查意见通知书，以兼顾听证原则与程序节约原则。
+简单来说，就是只要我们每次在答复审查意见的同时，对权利要求进行了修改，审查员就很难驳回我们的申请，很多前辈指出我这里说的有问题，可能前辈们看得太快，没看清楚我的意思，所以特别特别强调一点，这里的修改指的是将审查员之前从未评述过的技术特征添加到权利要求中来。一般来讲，审查员会将权利要求书中的每一个技术特征都进行评述，所以我们添加的技术特征一般来自于说明书，确切来说，是说明书中创造性相对较高、从未被审查员评述过，且未在权利要求中出现的技术特征，当然，添加技术特征的同时，需要对添加的技术特征的创造性进行论述和争辩，如果说明书中具备一定创造性的技术特征不多，那么我们也很难多次修改后不被驳回。由此可见，撰写一份优秀的申请文件是多么重要。当然，如果我们原来的权利要求具备足够的创造性，那么无需进行权利要求的修改，因为权利要求中的技术特征越多，其保护范围也就越小。不过假如我们的创造性真的不够，那么只能通过这种方式保证专利的授权。审查员给我们发完第三次或第四次审查意见通知书后压力就很大了（发过多次通知书后这个案子会受到国知局上层的注意），如果我们再在权利要求里加上一些稍具创造性的特征，审查员很有可能就给我们授权了。</p>
+
+<p>最后来说说那1个套路。
+其实做任何事情都是有游戏规则的，不按套路出牌只能是出力不讨好，答复审查意见也不例外。我们在撰写答复的时候，应该遵循以下套路：
+先跟审查员客气一下，具体参见上文原则1，
+然后第一部分阐述自己对要求进行了哪些修改，并具体说明此处修改记载于说明书何处（修改不能超出原申请的记载范围），符合《专利法》第33条的规定（如未进行修改则省去此部分）。
+第二部分指出审查员的错误理解，具体参见上文原则2；
+第三部分阐述本申请（修改后的）权利要求具有创造性（或新颖性），具有创造性就是指具有突出地实质性和显著的进步，第三部分需要逐项权利要求去阐述，比如我们有10项权利要求，那么我们需要分别论述每一项权利要求具备创造性。先确定本项权利要求相对于对比文件1的区别技术特征，然后有条理有层次地对每个区别技术特征进行展开说明，具体参见原则3。按照原则3论述完之后，表明我们的权利要求具有“突出的实质性”，之后还需要写一段本权利要求能够实现的现有技术实现不了的技术效果，以表明本权利要求具有“显著的进步”。第三部分有个技巧，就是论述完独立权利要求具备创造性之后，可以直接说由于独立权利要求具备创造性，其从属权利要求同样具备创造性，这样就无需再对从权进行论述了。不过如果你有精力的话还是建议不要偷这个懒，毕竟你论述的越充分，越容易说服审查员嘛。</p>
+
+<p>最后结尾再跟审查员客气一下，还是参见上文原则1。
+现在来填个坑，如何判断审查员说的那些“相当于”是否真的“相当于”。
+a、首先看对比文件的技术领域与本申请是否相同，如果技术领域不同，直接告诉审查员二者技术领域不同，不能做为本申请最接近的现有技术，或者不能作为本申请的对比文件与其他对比文件或惯用技术手段进行结合（高阶晋级，当技术领域不同时说完上面这些可以再说，退一步讲，即使能够作为本申请的对比文件，仍无法相当于，之后的论述同技术领域相同的情况，转入b）；如果技术领域相同，转入b</p>
+
+<p>b、仔细分析审查员提到的对比文件中公开的那些技术特征是否完全公开了我们权利要求中的技术特征，如果不是，那么从技术特征不同的角度开始展开阐述，之后转入c，如果确实与我们的特征相同，直接转入c</p>
+
+<p>c、仔细研究对比文件整体的技术方案，把与本申请相关的那些技术特征放到整体方案中来，考虑其要解决的技术问题和该特征在本申请中要解决的技术问题进行对比，如果要解决的技术问题不同，则展开阐述，之后转入d，如果要解决的技术问题也相同，那么直接转入d</p>
+
+<p>d、考虑该特征在对比文件中起到的技术效果与在本方案中起到的技术效果是否相同，如果不同则展开阐述，如果连技术效果也相同，那么说明对比文件公开的内容与本权利要求的技术领域、技术特征、所要解决的技术问题和达到的技术效果都相同，人家审查员说的没错，确实真的相当于。
+干货说完了，福利时间，我整理了一份审查意见答复模板，需要的观众可以找我。
+说了这么多关于审查意见答复的内容，最后还是需要说明一下，如果我们在专利申请阶段的申请文本撰写有问题的话，后续的答复写再好也是亡羊补牢。一份好的答复只能提升专利授权的可能性，一份好的申请文件才是决定专利能否授权的关键因素。</p>]]></content><author><name>Yingwei Guo</name></author><category term="教程" /><summary type="html"><![CDATA[假设我们的专利是一件发明专利。]]></summary></entry><entry><title type="html">【Python】利用requests库下载B站视频（半成品）</title><link href="http://localhost:4000/bilibili" rel="alternate" type="text/html" title="【Python】利用requests库下载B站视频（半成品）" /><published>2021-02-25T00:00:00+08:00</published><updated>2021-02-25T00:00:00+08:00</updated><id>http://localhost:4000/bilibili</id><content type="html" xml:base="http://localhost:4000/bilibili"><![CDATA[<h1 id="介绍">介绍</h1>
+
+<p>没写完介绍，，，回头再更…….</p>
+
+<h1 id="脚本如下">脚本如下</h1>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+</span><span class="s">'''
+Author: Guo Yingwei
+Date: 2021-02-09 17:51:46
+E-mail: willgyw@126.com
+Description:  Download bilibili video
+LastEditors: gyw
+LastEditTime: 2021-02-25 19:08:37
+'''</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+
+
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'referer'</span> <span class="p">:</span> <span class="s">'https://www.bilibili.com'</span><span class="p">,</span>
+    <span class="s">'user-agent'</span> <span class="p">:</span> <span class="s">'Mozilla/5.0 (Windows. NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36'</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">get_page</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">Session</span><span class="p">().</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="p">)</span>
+        <span class="n">s</span><span class="p">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="n">s</span><span class="p">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">apparent_encoding</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span><span class="p">(</span><span class="s">'解析网页失败，请检查！'</span><span class="p">)</span>
+
+    
+<span class="k">def</span> <span class="nf">parse_page</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">json_str</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="n">findall</span><span class="p">(</span><span class="s">'&lt;script&gt;window.__playinfo__=(.*?)&lt;/script&gt;'</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">re</span><span class="p">.</span><span class="n">S</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+    <span class="n">down_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="n">findall</span><span class="p">(</span><span class="s">'name="title" content="(.*?)"&gt;'</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">re</span><span class="p">.</span><span class="n">S</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">audio_url</span> <span class="o">=</span> <span class="n">json_data</span><span class="p">[</span><span class="s">'data'</span><span class="p">][</span><span class="s">'dash'</span><span class="p">][</span><span class="s">'audio'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">'backup_url'</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">video_url</span> <span class="o">=</span> <span class="n">json_data</span><span class="p">[</span><span class="s">'data'</span><span class="p">][</span><span class="s">'dash'</span><span class="p">][</span><span class="s">'video'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">'backup_url'</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">down_list</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">audio_url</span><span class="p">)</span>
+    <span class="n">down_list</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">video_url</span><span class="p">)</span>
+    <span class="n">down_list</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">down_list</span>
+
+<span class="k">def</span> <span class="nf">write_res</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">r</span><span class="s">'D:\\test\\'</span> <span class="o">+</span> <span class="n">filename</span><span class="p">,</span> <span class="s">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">video_audio_merge</span><span class="p">(</span><span class="n">video_name</span><span class="p">):</span>
+    <span class="k">pass</span> <span class="c1">#
+</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">bv</span><span class="p">):</span>
+    
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s">'http://www.bilibili.com/video/</span><span class="si">{</span><span class="n">bv</span><span class="si">}</span><span class="s">'</span>
+    <span class="n">html_data</span> <span class="o">=</span> <span class="n">get_page</span><span class="p">(</span><span class="n">url</span><span class="p">).</span><span class="n">text</span>
+    <span class="n">hfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">'hhh.html'</span><span class="p">,</span> <span class="s">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">'utf-8'</span><span class="p">)</span>
+    <span class="n">hfile</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">html_data</span><span class="p">)</span>
+    <span class="n">down_url_list</span> <span class="o">=</span> <span class="n">parse_page</span><span class="p">(</span><span class="n">html_data</span><span class="p">)</span>
+    
+    <span class="c1"># sava audio
+</span>    <span class="n">audio_url</span> <span class="o">=</span> <span class="n">down_url_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">down_url_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="n">replace</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="s">''</span><span class="p">).</span><span class="n">replace</span><span class="p">(</span><span class="s">'_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili'</span><span class="p">,</span> <span class="s">''</span><span class="p">)</span>
+    <span class="n">audio_content</span> <span class="o">=</span> <span class="n">get_page</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">audio_url</span><span class="p">).</span><span class="n">content</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'saving audio...'</span><span class="p">)</span>
+    <span class="n">write_res</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">title</span> <span class="o">+</span> <span class="s">'.mp3'</span><span class="p">,</span><span class="n">data</span> <span class="o">=</span> <span class="n">audio_content</span><span class="p">)</span>
+
+    <span class="c1">#save video
+</span>    <span class="n">video_url</span> <span class="o">=</span> <span class="n">down_url_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">down_url_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="n">replace</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="s">''</span><span class="p">).</span><span class="n">replace</span><span class="p">(</span><span class="s">'_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili'</span><span class="p">,</span> <span class="s">''</span><span class="p">)</span>
+    <span class="n">video_content</span> <span class="o">=</span> <span class="n">get_page</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">video_url</span><span class="p">).</span><span class="n">content</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'saving video...'</span><span class="p">)</span>
+    <span class="n">write_res</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">title</span> <span class="o">+</span> <span class="s">'.mp4'</span><span class="p">,</span><span class="n">data</span> <span class="o">=</span> <span class="n">video_content</span><span class="p">)</span>
+    <span class="n">video_audio_merge</span><span class="p">(</span><span class="n">video_name</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">(</span><span class="s">'BV1VJ411v7Ss'</span><span class="p">)</span>
+
+
+</code></pre></div></div>]]></content><author><name>Yingwei Guo</name></author><category term="爬虫" /><summary type="html"><![CDATA[介绍]]></summary></entry></feed>

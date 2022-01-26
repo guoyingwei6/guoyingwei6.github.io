@@ -1,0 +1,271 @@
+<!doctype html>
+<html>
+  <head>
+  <title>
+    
+      【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation | Blogs of Yingwei Guo
+    
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+  <!-- Use Atom -->
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Blogs of Yingwei Guo" />
+  <!-- Use RSS-2.0 -->
+  <!--<link href="/rss-feed.xml" type="application/rss+xml" rel="alternate" title="Blogs of Yingwei Guo | Blogs"/>
+  //-->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+    MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        }
+      });
+  </script>
+  <!-- Google Analytics -->
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', '', 'auto');
+  ga('send', 'pageview');
+</script>
+
+  <!-- Use Jekyll SEO plugin -->
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation | Blogs of Yingwei Guo</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation" />
+<meta name="author" content="Yingwei Guo" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="如果p值（假设零假设为真，则看到特定检验统计量的特定值的概率）低于预定义的alpha值（通常始终设为），则通常将统计检验称为有效检验，并且拒绝零假设。 0.05。这意味着在5％的情况下，原假设实际上是真的，并且我们检测到假阳性（I型错误），则否定假设被拒绝。每个统计检验都带有这样的概率，但是该概率是相对于一个检验的。“多次比较”或“多次测试”是基于一个以上测试结果做出决策的一般问题（例如，同时考虑一组统计推断）的名称。问题的性质在这篇文章中已经明确（XKCD“绿色软糖”卡通）。关于GWAS，在典型的研究中，同时进行数十万至数百万次测试，每个测试都针对单个标记，并且具有自己的假阳性概率。因此，在整个GWAS分析中发现一个或多个假阳性（即假关联）的累积可能性要高得多。例如，在5％的水平上测试100,000个基因座的关联性时，预计会有5,000个假阳性。如果我们希望总体I类错误（即全家庭错误率）保持在5％，则需要降低每个基因座的显着性水平。" />
+<meta property="og:description" content="如果p值（假设零假设为真，则看到特定检验统计量的特定值的概率）低于预定义的alpha值（通常始终设为），则通常将统计检验称为有效检验，并且拒绝零假设。 0.05。这意味着在5％的情况下，原假设实际上是真的，并且我们检测到假阳性（I型错误），则否定假设被拒绝。每个统计检验都带有这样的概率，但是该概率是相对于一个检验的。“多次比较”或“多次测试”是基于一个以上测试结果做出决策的一般问题（例如，同时考虑一组统计推断）的名称。问题的性质在这篇文章中已经明确（XKCD“绿色软糖”卡通）。关于GWAS，在典型的研究中，同时进行数十万至数百万次测试，每个测试都针对单个标记，并且具有自己的假阳性概率。因此，在整个GWAS分析中发现一个或多个假阳性（即假关联）的累积可能性要高得多。例如，在5％的水平上测试100,000个基因座的关联性时，预计会有5,000个假阳性。如果我们希望总体I类错误（即全家庭错误率）保持在5％，则需要降低每个基因座的显着性水平。" />
+<link rel="canonical" href="http://localhost:4000/muti-test" />
+<meta property="og:url" content="http://localhost:4000/muti-test" />
+<meta property="og:site_name" content="Blogs of Yingwei Guo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-01-07T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/muti-test"},"author":{"@type":"Person","name":"Yingwei Guo"},"@type":"BlogPosting","description":"如果p值（假设零假设为真，则看到特定检验统计量的特定值的概率）低于预定义的alpha值（通常始终设为），则通常将统计检验称为有效检验，并且拒绝零假设。 0.05。这意味着在5％的情况下，原假设实际上是真的，并且我们检测到假阳性（I型错误），则否定假设被拒绝。每个统计检验都带有这样的概率，但是该概率是相对于一个检验的。“多次比较”或“多次测试”是基于一个以上测试结果做出决策的一般问题（例如，同时考虑一组统计推断）的名称。问题的性质在这篇文章中已经明确（XKCD“绿色软糖”卡通）。关于GWAS，在典型的研究中，同时进行数十万至数百万次测试，每个测试都针对单个标记，并且具有自己的假阳性概率。因此，在整个GWAS分析中发现一个或多个假阳性（即假关联）的累积可能性要高得多。例如，在5％的水平上测试100,000个基因座的关联性时，预计会有5,000个假阳性。如果我们希望总体I类错误（即全家庭错误率）保持在5％，则需要降低每个基因座的显着性水平。","headline":"【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation","dateModified":"2022-01-07T00:00:00+08:00","datePublished":"2022-01-07T00:00:00+08:00","url":"http://localhost:4000/muti-test","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <h3 class="header-title">
+    <a href="/">Blogs of Yingwei Guo</a>
+    <small class="header-subtitle">Blogs</small>
+    <div class="menu">
+  <nav class="menu-content">
+    
+      <a href="/about.html">About</a>
+    
+      <a href="/writing.html">Writing</a>
+    
+      <a href="/contact.html">Contact</a>
+    
+  </nav>
+  <nav class="social-icons">
+    
+  
+  
+    <a href="https://www.github.com/guoyingwei6" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="https://twitter.com/" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="http://www.google.com" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="mailto:guoyingwei6@gmail.com" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="/feed.xml"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+  
+
+  </nav>
+</div>
+
+  </h3>
+</header>
+
+      <div class="content-container">
+        <h1>
+  【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation
+</h1>
+
+<article>
+  <p>如果p值（假设零假设为真，则看到特定检验统计量的特定值的概率）低于预定义的alpha值（通常始终设为），则通常将统计检验称为有效检验，并且拒绝零假设。 0.05。这意味着在5％的情况下，原假设实际上是真的，并且我们检测到假阳性（I型错误），则否定假设被拒绝。每个统计检验都带有这样的概率，但是该概率是相对于一个检验的。“多次比较”或“多次测试”是基于一个以上测试结果做出决策的一般问题（例如，同时考虑一组统计推断）的名称。问题的性质在这篇文章中已经明确（XKCD“绿色软糖”卡通）。关于GWAS，在典型的研究中，同时进行数十万至数百万次测试，每个测试都针对单个标记，并且具有自己的假阳性概率。因此，在整个GWAS分析中发现一个或多个假阳性（即假关联）的累积可能性要高得多。例如，在5％的水平上测试100,000个基因座的关联性时，预计会有5,000个假阳性。如果我们希望总体I类错误（即全家庭错误率）保持在5％，则需要降低每个基因座的显着性水平。</p>
+
+<p>有多种方法可以达到此目的。第一组包括一些经典的控制程序，以Bonferroni校正表示。Bonferroni校正仅将每个基因座处的显着性水平除以测试次数。换句话说，它将alpha值从a = 0.05调整为a =（0.05 / k），其中k是进行的统计检验的次数。如果测试是独立的，则Bonferroni界将提供一个稍微保守的界。如果测试相关，则界限将变得更加保守。由于GWAS标记之间的连锁不平衡，通常假设GWAS数据集的每个关联测试都是独立的是不正确的。因此，应用Bonferroni校正通常会为我们提供最保守的p值阈值（也许是下限？）–对于使用500,000个SNP的典型GWAS，SNP关联的统计显着性将设置为1e-7。</p>
+
+<p>I类与II类之间的权衡适用于大多数统计检验，研究人员更关心的是哪个错误决定如何进行。大规模探索性实验的目标通常是从原始数据中选择一组减少的潜在候选对象，以进行进一步分析。为了包括所有可能的真实替代方案（与真实null相对），返乡调查员通常愿意接受一些误报。在许多GWAS中，我们希望采用大量可能的假设并提取一个子集，该子集显示出对其替代假设的最大支持，以供进一步考虑。还已知的是，当研究的对象是稀有变体，稀有疾病或效果不大的变体时，GWAS的功率较低（即易受II型错误影响）。因此，我们通常更关心II型错误，</p>
+
+<p>顺序Bonferroni校正是对标准Bonferroni校正的增强功能。一般的想法是，当我们拒绝一个假设时，剩下的测试就会少一些，并且多重比较校正应该考虑到这一点。Holm（1979）提出了一种顺序Bonferroni校正方法，该方法允许测试之间可能存在依赖性。当我们期望许多无效假设中只有少数是错误的时，Bonferroni校正及其扩展适用。假设n是测试总数，n0是真正的null数，taht表示n0接近n。另一种设置是，确实有相当一部分测试是错误的。在这种情况下，即使是连续的Bonferroni校正也可能过于严格，从而导致假阴性过多（即功率降低）。如果我们期望一定数量的假设是错误的，那么控制我们声明为重要的测试（即错误发现）中的误报率要比限制所有测试（包括那些测试）中的误报率更合适。我们不能拒绝其原假设。话虽这么说，我们也不希望被误报完全淹没，因此缩小集合中误报的比例仍然需要控制。</p>
+
+<p>从这种思路得出的一种方法是控制错误发现率（FDR）–重大结果为假阳性的比例（即，假阳性测试的比例）。该方法试图找到一个p值阈值tao，以使使用p值&lt;= tao声明为显着的检验集具有所需的错误发现率delta（delta = 5％表示平均而言，我们声明为重要的实际上不是）。FDR程序最初由Benjamini和Hochberg（1995）开发，实质上纠正了预期错误发现的数量，从而提供了对那些被认为是重大发现的实际真实结果数量的估计。该技术已广泛应用于GWAS，并以多种方式扩展（van den Oord，2008）。考虑测试N个假设H_ {1}，H_ {2}，\ ldots，H_ {N}基于它们各自的p值p_ {1}，p_ {2}，\ ldots和p_ {N}。考虑到发现的分数q被允许（容忍）为假。按升序对p值进行排序，p _ {（（1）} \ leq p _ {（2）} \ leq \ ldots \ leq p _ {（N）}并表示H _ {（i）}对应于p _ {（一世）}。令k为p _ {（i）} \ leq \ frac {i} {N} \ frac {q} {c（N）}的最大i。然后拒绝所有H _ {（i）}，i = 1、2，\ ldots，k。常数c（N）不在原始出版物中，出现在Benjamini和Yekutieli（2001）中，用于无法确定独立性的情况。常数的可能选择为c（N）= 1或c（N）= \ sum_ {i = 1} ^ {N} 1 / i。第二种在任何情况下均有效，而第一种在大多数情况下均有效，尤其是在测试之间不存在负相关的情况下。如Genovese等人介绍的那样，BH程序已在不同领域找到了许多应用，包括神经影像学。（2002）。FDR校正的问题在于q _ {（i）}不是p _ {（i）}的单调函数。这意味着，如果有人使用任何q _ {（i）}来设置FDR校正值的集合的阈值，则结果与通过对所有这些相应q级别依次应用B＆H程序所获得的结果不同。</p>
+
+<p>为了解决这个问题，Yekuteli和Benjamini（1999）引入了FDR调整，其中强制执行单调性，并且该定义与原始FDR定义兼容。令q * {（i）}为p {（i）}的FDR调整值。它的值是最小的q _ {（k）}，k \ geq i，其中q _ {（k）}是经过FDR校正的（如上所述）。就是这样！</p>
+
+<p>如前所述，控制误报与错误发现的决定在很大程度上取决于测试的一部分，即零值（n0 / n），这通常是未知的。因此，一些较早的著作由于试图估计n0而与该帖子的主题相关（出于拒绝全局零假设的目的-所有检验均来自其各自的真实零假设）。我们知道，如果空值正确，则p值的绘制在（0,1）上遵循均匀分布。否则，如果测试集合包含一些与真实零值混合在一起的替代假设，则该分布倾向于是混合的，分数n0 / n是从均匀数中抽取的，而（1- n0 / n）是从其他某种分布中抽取的。已开发出一些方法来帮助人们直观地检测出差异/偏离。其中之一是Schweder-Spjøtvoll图，其中p值从最小p（1）到最大p（n）有序，并且它们的等级r（i）被绘制为1-p（i）的函数。在均匀分布下，结果是一条直线穿过原点和点（1，n），如下图所示。当替代假设（相对于零）正确时，p值将接近零而膨胀，因此在下部曲线中，线性接近于1会强烈偏离（p接近零，所以1-p值接近1）。</p>
+
+<p>或者，我们可以绘制p值的经验分布（使用直方图），并查看均匀分布是否存在偏差。均匀分布导致直方图平坦，而任何偏移都将导致偏向0或1。如Walsh和Lynch的书的附录4所述，刚刚介绍的方法还允许从其创建的图推断n0。</p>
+
+<p>GWAS中的多重比较问题比一般情况下更为复杂，这有两个原因-大规模同时比较以及这些比较测试之间的相关性。当代的遗传关联研究可能会测试数十万到数百万个遗传变异的关联，这些变异通常具有多个二元和/或连续性状，或者在一个以上的遗传模型下。由于附近标记之间的连锁不平衡以及性状和模型之间的相关性，许多关联测试可能彼此关联。并且不要忘记，所有这些测试都是在可能没有大量样本的一个公共数据集（即同一组个人）上进行的。如前所述，多重比较问题基于所有测试的p值的联合分布进行统计推断。如果这些检验是独立的，则假设每个检验的零假设为真（每个p值是遵循均匀分布的随机值），则计算p值的联合分布相对容易。但是，如果这些测试是相互依赖的，则计算将变得更加困难，因为p值的零分布会明显偏离均匀性。</p>
+
+<p>那么，我们介绍的方法在这种情况下是如何做的？它们的有效性和效率如何受到影响？当测试关联时，Bonferroni校正过于保守。举一个极端的例子，当所有p值都相同时（如完全依赖的情况），Bonferroni程序的临界值（假设它是alpha /标记数）应仅为alpha。最初的FDR控制程序假定多个测试之间是独立的（Benjamini和Hochberg，1995）。统计噪声中的依赖性仅在推导FDR控制程序时会产生问题，因此只要依赖性结构满足某些约束，就可以解决（Benjamini和Yekutieli，2001）。（请参阅这篇文章）。但是，GWAS的大规模依赖主要是由遗传而不是统计原因引起的，并在FDR数量本身的适用性方面造成了问题（Chen和Storey，2006年）。有人认为，FDR建立在“真实发现”的数量上，而后者在GWAS中通常是模棱两可的–很难确定与性状相关的因果变体的确切数量。因此，将FDR应用于单个性状的多个相关基因座（由于LD）是可疑的。</p>
+
+<p>因此，有必要考虑p值（或各个测试统计数据）的真实依赖性结构，以便得出更强大的控制/校正程序。从统计学上讲，这可以通过应用重采样方法（例如自举和置换方法）来实现，但要承认它们是计算密集型的。从遗传上讲，我们可以对SNP（即LD）之间的依赖性进行建模，并将此信息整合到以前的方法/过程中（例如，Dalmasso等，2008； Wei等，2009； Broberg 2005； Need等，2009）。 ）。让我们从排列测试开始。关于多次比较的p值调整，置换测试被广泛认为是可以与其他估计量和测试进行比较的黄金标准。它在无效假设下生成测试统计数据的经验分布（因此，当统计量的渐近分布未知或难以建模时很有用），同时保持原始的相关结构。通过在数据集中将每个个体的表型随机重新分配给另一个个体（即在受试者之间交换特征标签）来实现对GWAS结果的典型置换测试，从而有效地打破了基​​因型与表型的关系，同时保持了数据集的LD结构。数据的每次随机重新分配都代表在原假设下对个体的一个可能采样，并且此过程重复了预定的次数N，以生成分辨率为N的经验分布。因此，N值为1000的置换过程给出的经验p值在小数位的1/1000之内。给定测试之间的相关性，可以对数据进行多次随机排列和重新分析多次，并将基于排列的结果与原始结果进行比较，从而可以估计观察到与原始结果相同的P值的可能性。该解决方案具有简单性和鲁棒性，因此很有吸引力，通常被认为是分析的黄金标准。但是，在GWAS的情况下，置换可能需要太多的计算时间，因此需要计算效率高的替代方法。给定测试之间的相关性，可以对数据进行多次随机排列和重新分析多次，并将基于排列的结果与原始结果进行比较，从而可以估计观察到与原始结果相同的P值的可能性。该解决方案具有简单性和鲁棒性，因此很有吸引力，通常被认为是分析的黄金标准。但是，在GWAS的情况下，置换可能需要太多的计算时间，因此需要计算效率高的替代方法。给定测试之间的相关性，可以对数据进行多次随机排列和重新分析多次，并将基于排列的结果与原始结果进行比较，从而可以估计观察到与原始结果相同的P值的可能性。该解决方案具有简单性和鲁棒性，因此很有吸引力，通常被认为是分析的黄金标准。但是，在GWAS的情况下，置换可能需要太多的计算时间，因此需要计算效率高的替代方法。</p>
+
+<p>已经开发了一些软件包来执行GWAS研究的排列测试，包括流行的PLINK软件，PRESTO（2008年浏览），PERMORY（）和REM（）。通常，plink软件可以为您提供原始的和排列的p值，尽管它（默认情况下）使用带有滑动窗口的自适应测试策略，如果看起来SNP低于该值，则该窗口允许停止运行所有排列（例如每个SNP为1000）考虑不是“有趣的”；它还具有用于计算maxT的选项，请参见在线帮助。</p>
+
+<p>另一组方法是扩展Bonferroni或FDR调整以考虑测试之间的相关性。当多个测试（例如M）相关时，在测试中观察到特定P值的真实概率较小，因为与独立测试相比，测试统计之间的差异较小，这使得极端测试统计的可能性降低。实际上，好像执行了更少的测试。因此，一个直观的解决方案是估计和利用独立测试的有效数量（M_effs），因为它们是应予纠正的测试。例如，一些研究人员建议计算基因区域中独立SNP的有效数量，并在Bonferroni校正中使用该值（Cheverud 2001; Dudbridge＆Gusnanto，2008; Galwey 2009; Gao et al。，2008; Li and Ji，2004 ; Nyholt 2004）。这种方法被认为比基本的Bonferroni校正要保守一些，并且比置换测试更有效的计算，但是当这种方法应用于GWAS时，其准确性并不令人满意（Dudbridge＆Koeleman 2004； Salyakina等，2005）。毕竟，依靠单个参数无法完全捕获与SNP的全基因组LD一样复杂的相关结构。另一种方法（Conneely＆Boehnke 2007）使用极端尾巴理论来显式计算检测到极端测试统计信息的概率（即，超出预定义的阈值），并且通常比给定级别上基于排列的p值快数千倍。的精度。该方法不假设测试之间具有独立性，但假设所有关联测试统计量的渐近联合分布是具有已知协方差矩阵的多元正态分布。尽管许多常见的关联检验统计量都是渐近多元正态的，但使用渐近分布需要相当大的样本量，可能并不适合所有情况，例如，具有稀有次要等位基因的显性或隐性模型。此方法旨在调整大量1-df测试的最小P值和其他有序P值，因此，如果我们正在寻找少量合理的较大遗传效应，则该方法尤为重要。如果相反，我们期望有很多非常小的影响，则同时进行所有关联的联合分析（基于多重df测试）可能更合适。</p>
+
+<p>在某些情况下，所谓的间隙统计或滑动窗口已被证明是成功的，但是您会在（7）和（8）中找到很好的评论。我也听说过有效利用单倍型结构或LD的方法，例如（9），但我从未使用过。但是，它们似乎与估算标记之间的相关性更为相关，</p>
+
+<p>可以在执行各个测试之前删除旨在改善此依赖性的另一种方法，并且删除此依赖性会在所得测试中生成独立的p值。</p>
+
+<p>控制多个测试以准确估计显着性阈值是涉及许多遗传标记的研究（尤其是GWA研究）的一个非常重要的方面。I型错误（也称为显着性水平或假阳性率）是在原假设为真时拒绝原假设的概率。显着性水平表示调查人员愿意在其研究中容忍的假阳性比例。逐族错误率（FWER）是在一组测试中发生一个或多个I型错误的概率。较低的FWER会限制误报的比例，但会降低在确实存在关联时检测关联的能力。在分析的设计阶段应指定合适的FWER1。然后，重要的是要跟踪执行的统计比较的数量，并针对多个测试校正单个基于SNP的显着性阈值，以维持整体FWER。对于在n个SNP的每一个上应用的关联测试，对于给定的FWER，每个测试的显着性水平α<em>可以使用Bonferroni（α</em> =α/ n）或Sidak15,16（α* = 1 −（1 –α）1 / n）调整。如果测试是独立的，则Sidak校正是准确的。但是，在包含密集标记集的GWA研究中，这不太可能是正确的，因此两种校正都非常保守。Holm17给出了一种类似于Bonferroni校正的但稍微严格一些的替代方法。FWER方法的替代方法包括错误发现率（FDR）程序18、19，这些SNP中假阳性预期比例的控制被宣布为重要。但是，标志物之间的依赖性以及少量的预期真实阳性结果使FDR程序成为GWA研究的难题。替代地，置换方法旨在通过随机化来使零假设正确：本质上，将原始P值与通过重复置换原始检验而随机置换病例对照标签获得的P值的经验分布进行比较20。尽管Bonferroni和Sidak校正通过假设标记之间的独立性提供了一种简单的方法来调整多次测试，但置换测试被认为是精确校正的“黄金标准” 20。置换程序在GWA研究的设置中需要大量计算，此外，仅适用于当前的基因型数据集；因此，除非对整个基因组进行测序，否则它们将无法产生真正的全基因组重要性阈值。还提出了贝叶斯因子来衡量重要性6。为了对密集的SNP和重排数据进行GWA研究，Dudbridge和Gusnanto21提出了针对英国白种人人群的标准全基因组显着性阈值7.2e-8。Hoggart等[22]根据样本量和拟议的FWER提出了当代人口的其他阈值。Dudbridge和Gusnanto21提出了英国高加索人口的全基因组显着性标准阈值7.2e-8。Hoggart等[22]根据样本量和拟议的FWER提出了当代人口的其他阈值。Dudbridge和Gusnanto21提出了英国高加索人口的全基因组显着性标准阈值7.2e-8。Hoggart等[22]根据样本量和拟议的FWER提出了当代人口的其他阈值。最近，公认的标准是5e-8（参考23）。Bonferroni校正使用整个基因组中的所有n个单核苷酸多态性（SNP），但是这种方法是高度保守的，对于不是真正独立的SNP，将“过度校正”。许多SNP位于强连锁不平衡（LD）（“区域”）区域内，不应视为“独立”区域。最近发现，所研究的典型人群具有大约一百万个独立的染色体片段（例如在欧洲人中）。这是基于ENCODE的数据得出的（请注意：在非洲人口中，大约有200万独立的细分受众群）。因此，我们有0.05 / 1e6 = 5e-8。其他研究也得出了相同的数字和建议，并且以这种严格的p值确定的基因座在不同的实验中都难以成立。此外，用于评估观察到的P值是否与预期值一致的图形技术包括对数分位数-分位数P值图，该图突出显示了偏离无效假设的基因座24。</p>
+
+<p>参考文献
+	• Benjamini和Hochberg（1995）控制错误发现率：一种实用且强大的多重测试方法。JRSS（B）57：289-300
+	• Benjamini，Y.和D. Yekutieli，2001年。对依赖项的错误发现率的控制。安 统计 29：1165-1188。
+	• Broberg，P.对未改变基因比例和错误发现率的估计的比较综述。BMC生物信息学2005 6：199。
+	• Browning（2008）PRESTO：通过一阶和两阶段遗传关联研究的排列，快速计算阶次统计量分布并通过排列多次测试调整后的P值。BMC生物信息学9：309
+	• Chen，Lin和John D.Story。“放松关联分析的重要性标准。” 遗传学173.4（2006）：2371-2381。
+	• Cheverud JM：在区间作图基因组扫描中对多个比较进行的简单校正。遗传2001; 87：52-58。
+	• Conneely KN，Boehnke M：如此多的相关测试，所以时间很少！快速调整多个相关测试的p值。美国杂志2007年 81：1158–1168。
+	• C，达宁，E和TrégouetDA。全基因组关联研究中等位基因频率的加权Holm程序。遗传学，2008 180（1）：697-702。
+	• Dudbridge F，Koeleman BP（2004）在大型相关数据研究（包括全基因组关联研究）中有效计算多个关联的显着性水平。我是洪姆（J Hum Humt）75：424–435
+	• Dudbridge F，Gusnanto A（2008）估计全基因组关联扫描的重要阈值。Genet Epidemiol 32：227–234
+	• Galwey NW：一种有效测试数量的新度量，一种用于比较非独立重要性测试系列的实用工具。Genet Epidemiol，2009年；33：559–568。
+	• 高X，Starmer J，马丁ER：使用相关的单核苷酸多态性进行遗传关联研究的多重测试校正方法。Genet Epidemiol，2008年；32：361–369。
+	• Hochberg Y，Benjamini Y（1990）进行多重重要性检验的更强大的程序。Stat Med 9：811–818。
+	• Li J，Ji L：使用相关矩阵的特征值调整多基因座分析中的多重测试。遗传2005；95：221-227。
+	• Nyholt，DR。相互链接不平衡中单核苷酸多态性多重测试的简单校正。我是J Hum Genet。2004 74（4）：765-769。
+	• Salyakina D，Seaman SR，Browning BL，Dudbridge F，Muller-Myhsok B（2005年），对多次测试校正的Nyholt程序的评估。嗡嗡声在这里60：19–25
+	• van den Oord EJ（2008）控制遗传研究中的错误发现。Am J Med Genet B神经精神病学Genet 147B：637–644。
+	• Walsh＆Lynch（将于2015年秋季发布）。数量性状的演变和选择：I.基金会（2014年3月26日，版本）。A4。多重比较：Bonferroni校正和错误发现率
+	• Wei，Z，Sun，W，Wang，K和Hakonarson，H.通过隐马尔可夫模型进行的基因组范围关联研究中的多重检验。生物信息学2009 25（21）：2802-2808。
+	• 校正与测试相关的多个测试的p值（遗传）</p>
+
+
+</article>
+
+  <span class="post-date">
+  Written on
+  
+  January
+  7th,
+  2022
+  by
+  
+    Yingwei Guo
+  
+</span>
+
+
+
+  <div class="post-date">Feel free to share!</div>
+<div class="sharing-icons">
+  <a href="https://twitter.com/intent/tweet?text=【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation&amp;url=/muti-test" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=/muti-test&amp;title=【转】GWAS当中的多重比较问题：Bonferroni校正，FDR控制和置换测试permutation" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+</div>
+
+
+
+  <div class="related">
+  <h1 >You may also enjoy:</h1>
+  
+  <ul class="related-posts">
+    
+      
+        
+        
+      
+        
+          <li>
+            <h3>
+              <a href="/plink">
+                【GWAS】利用PLINK软件进行数据清洗和关联分析
+                <!--<img src="http://localhost:4000/images/">-->
+                <!--<small>January 2, 2022</small>-->
+              </a>
+            </h3>
+          </li>
+          
+        
+      
+        
+          <li>
+            <h3>
+              <a href="/emmax">
+                【GWAS】利用EMMAX软件进行GWAS
+                <!--<img src="http://localhost:4000/images/">-->
+                <!--<small>January 1, 2022</small>-->
+              </a>
+            </h3>
+          </li>
+          
+        
+      
+    
+  </ul>
+</div>
+
+
+
+
+      </div>
+      <footer class="footer">
+  
+  
+  
+    <a href="https://www.github.com/guoyingwei6" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="https://twitter.com/" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="http://www.google.com" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="mailto:guoyingwei6@gmail.com" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+  
+
+  
+  
+    <a href="/feed.xml"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+  
+
+  <div class="footer-description"><a href="/">Blogs of Yingwei Guo | Blogs by Yingwei Guo</a></div>
+</footer>
+
+    </div>
+  </body>
+</html>
