@@ -2,9 +2,7 @@
 layout: post
 title: "SNP Calling"
 author: "Yingwei Guo"
-categories: 
-tags: 教程
-image: 
+
 ---
 
 01.QC
