@@ -1,55 +1,40 @@
-# # # # # # # #
-#   K i k o   #
-# # # # # # # #
+# Site settings
+title:          Yingwei Guo
+description:    "'s Blog"
+url:            "https://guoyingwei6.github.io"
 
-# Basic
-name:               "Yingwei Guo"
-description:        "a clean, lightweight and minimalistic blog"
+# Google Analytics
+# google_analytics: UA—XXXXXXXX-X
 
-# jekyll-seo-tag, see: http://www.rubydoc.info/gems/jekyll-seo-tag/1.2.0
-url:                "//guoyingwei.top"
-author:             "guoyingwei"
-twitter:
-  username:         "guoyingwei"
-#facebook:
-#  app_id:           1234
-#    publisher:      1234
+# Author
+author:
+  name:         Yingwei Guo
+  url:          https://guoyingwei.top
+  email:        guoyingwei6@gmail.com
 
-# URL
-baseurl:            ""
-#baseurl:            "" #For Root Domain
-permalink:          /:year/:month/:day/:title/
+# Build settings
+markdown:       kramdown
+include:
+  - _pages
 
-# Markdown
-markdown:           kramdown
-
-# Navigation
-nav:
-  - name:           "About"
-    remote:         false
-    localpath:      "about"
-  - name:           "Github"
-    remote:         true
-    href:           "//github.com/guoyingwei6/guoyingwei6.github.io"
-
-# Sass
+# Assets
 sass:
-  style:            :compressed
+  sass_dir:     _sass
+  style:        compressed
 
-# Scopes
-defaults:
-  -
-    scope:
-      path:         ""
-      type:         "pages"
-    values:
-      layout:       "page"
-  -
-    scope:
-      path:         ""
-      type:         "posts"
-    values:
-      layout:       "post"
-
-gems:
+# Gems
+plugins:
+  - jekyll-feed
+  - jekyll-paginate
   - jekyll-seo-tag
+  # - jemoji #Uncomment this to allow emoji in your post
+
+# Permalinks
+permalink:      /:year-:month-:day/:title
+paginate:       5
+
+# Excludes
+exclude: [ Gemfile, Gemfile.lock, tale.gemspec ]
+
+# Disqus (Set to your disqus id)
+disqus:         jekyll-tale

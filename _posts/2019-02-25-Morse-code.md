@@ -1,6 +1,10 @@
 ---
 layout: post
 title: "摩尔斯电码转换的小程序"
+author: "Yingwei Guo"
+categories: journal
+tags: [documentation,sample]
+image: 
 ---
 
 

@@ -2,6 +2,9 @@
 layout: post
 title: "【统计学】卡方检验和Fisher精确检验"
 author: "Yingwei Guo"
+categories: 
+tags: 统计学
+image: 
 ---
 
 ## 什么是卡方检验
