@@ -1,6 +1,6 @@
 # Site settings
-title:          Yingwei Guo
-description:    "'s Blog"
+title:          Yingwei Guo's Blog
+description:    ""
 url:            "https://guoyingwei6.github.io"
 
 # Google Analytics
@@ -31,7 +31,7 @@ plugins:
 
 # Permalinks
 permalink:      /:year-:month-:day/:title
-paginate:       5
+paginate:       10
 
 # Excludes
 exclude: [ Gemfile, Gemfile.lock, tale.gemspec ]
