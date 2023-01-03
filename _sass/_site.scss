@@ -188,7 +188,7 @@ body {
     &:hover {
       background-color: $background-over-color;
       border-color: transparent;
-      border-radius: 5px;
+      border-radius: 10px;
     }
 
     a {
@@ -214,7 +214,7 @@ body {
 
     &-desc {
       color: $base-color;
-      margin-bottom: .25rem;
+      margin-bottom: .15rem;
       font-size :1rem;
     }
   }
