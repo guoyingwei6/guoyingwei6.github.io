@@ -133,6 +133,8 @@ comments:
     owner       : guoyingwei6 # GitHub repo owner
     admin: guoyingwei6 # GitHub repo owner and collaborators, only these guys can initialize GitHub issues, IT IS A LIST.
       # - your GitHub Id
+    distraction_free_mode: false
+    proxy: https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token
 
   ## Valine
   # please refer to https://valine.js.org/en/ for more info.
