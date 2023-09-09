@@ -3,6 +3,7 @@ layout: article
 title: "About the Author"
 author: "Yingwei Guo"
 tags: [documentation,sample]
+key: 2018-09-17-about-the-author
 ---
 
-你好，我叫郭应威，一名生物信息学相关专业研究生。
+Yingwei Guo, phd candidate。

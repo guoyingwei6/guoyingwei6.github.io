@@ -131,8 +131,8 @@ comments:
     clientSecret: 01a91c403389ae85ef4281087f62daf93931a0e0 # GitHub Application Client Secret
     repository  : guoyingwei6.github.io # GitHub repo
     owner       : guoyingwei6 # GitHub repo owner
-    admin: guoyingwei6 # GitHub repo owner and collaborators, only these guys can initialize GitHub issues, IT IS A LIST.
-      # - your GitHub Id
+    admin:  # GitHub repo owner and collaborators, only these guys can initialize GitHub issues, IT IS A LIST.
+      - guoyingwei6
     distraction_free_mode: false
     proxy: https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token
 
@@ -216,6 +216,9 @@ defaults:
       show_edit_on_github: true
       show_subscribe: true
       pageview: true
+      lightbox: true
+      footer: true
+      
 
 
 ## => Plugins
